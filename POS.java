@@ -6,20 +6,6 @@ public class POS {
     //currently this system takes user input via a Scanner
     //later on it may be updated to have a gui, but that is not the main concern as of right now
 
-    public Vehicle getVehicleDataFromDB(Vehicle v) {
-
-        return null;
-    }
-
-    public void sendEmployeeDataToDB(Employee p) {
-
-    }
-
-    public Employee getEmployeeDataFromDB(Employee p) {
-
-        return null;
-    }
-
     public static Vehicle manuallyCreateVehicle() {
         //vcs = Vehicle Creation Scanner
         Scanner vcs = new Scanner(System.in);
@@ -66,10 +52,11 @@ public class POS {
         }
     }
     
+    //MUST SPECIFY AWS PATH IN ARGS[0] !!!
     public static void main(String[] args) {
         boolean exit = false;
         Scanner scanner = new Scanner(System.in);
-        APICallMaker apiCaller = new APICallMaker("https://lwxsjt5kvg.execute-api.us-west-2.amazonaws.com/");
+        APICallMaker apiCaller = new APICallMaker(args[0]);
 
         System.out.println("Welcome to the automated Valet system!");
 

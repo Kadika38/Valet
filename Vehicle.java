@@ -33,6 +33,7 @@ public class Vehicle {
         System.out.println("Vehicle created from map");
     }
 
+    //converts full vehicle info to json for input into db
     private String toJsonString() {
         boolean before = false;
         String s = "{";
