@@ -2,8 +2,7 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
-- (POS) Add New Vehicle & Update Vehicle are very similar, put similar call blocks into new nested secondary function
-- Next up, add Employees to the mix
+- Currently: adding employees to this setup
 - Still need more details
 
 POS
@@ -23,7 +22,7 @@ POS
     -> (call) (API Call Maker) Send Vehicle Log to DB
 - View Vehicle Info *
     -> (call) (API Call Maker) Retrieve Vehicle from DB
-    -> (call) (API Call Maker) Retrieve Vehicle Logs from DB *
+    -> (call) (API Call Maker) Retrieve Vehicle Logs from DB
     - Show to user
 - Update Vehicle Info
     -> (call) Update Vehicle
@@ -68,6 +67,12 @@ Vehicle Log
 
 -----------------------------
 
+Employee
+(Functions)
+
+
+-----------------------------
+
 API Call Maker
 (Functions)
 - Send Vehicle to DB
@@ -76,3 +81,6 @@ API Call Maker
     - retrieve data
     -> (call) (Vehicle) Constructor
     - return Vehicle
+- Retrieve Vehicle Logs from DB
+    - retrieve logs
+    - return logs
