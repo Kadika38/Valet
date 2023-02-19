@@ -2,7 +2,13 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
-- currently building out the vehicle class
+- Currently filling in Gate functions
+- During program initial set up, create all the garages spots ; then create a map of <Vehicle, Spot> called garage 
+
+Notes for later
+- find a way to validate make and color in Vehicle setter functions
+- consider pros/cons of consolodating license plates and their states as a single license plate object, in Vehicle object
+- later on, implement limited garage access for non valet employees
 
 POS
 (Primary Functions)
@@ -10,28 +16,56 @@ POS
 
 (Seconday Functions)
 
+(Main) - this runs initial setup, and then once set up, simply runs the pos system *
+
 
 -----------------------------
 
 Gate
+- (API Call Maker) api
+
+Constructor (String url)
+    - this.api = new API Call Maker (url)
+
 (Functions)
 
-Scan in
+- Scan in (Vehicle ID vid)
+    - if vid is valid Vehicle ID
+        - ask for input of Employee ID eid
+        - if eid is valid Employee ID
+            -> (call) (API Call Maker) Get Employee Garage Access
+            - if employee garage access > 0
+                - print "access granted"
+                -> (call) Open Gate for One Vehicle
+                - create new log(eid, vid, "Gate entry")
+                -> (call) (API Call Maker) Send Log to DB (log)
+            - if employee garage acces == 0
+                - print "no garage access, see manager"
+                - create new log(eid, vid, "Gate entry attempt, access not granted due to employee garage access level")
+                -> (call) (API Call Maker) Send Log to DB (log)
 
-Scan out
+- Scan in (Employee ID eid) *
+    -
+
+- Scan out *
+
+- Open Gate for One Vehicle
+    - this is a fake function for the purposes of this project, just print "gate opened for 1 vehicle"
+
+(Main) - always actively waiting for scans in / out *
 
 -----------------------------
 
 Vehicle
-- ID
-- Status (In / Being Parked / Requested / Retrieved / Out / Closed)
-- License Plate
-- License Plate State
-- Make
-- Color
-- Location
-- Guest First Name
-- Guest Last Name
+- (String) ID
+- (String) Status ("In" / "Being Parked" / "Requested" / "Retrieved" / "Out" / "Closed")
+- (String) License Plate
+- (String) License Plate State
+- (String Make
+- (String) Color
+- (Spot) Location
+- (String) Guest First Name
+- (String) Guest Last Name
 
 Constructor (ID)
     - this.ID = ID
@@ -42,27 +76,97 @@ Constructor (ID)
     - if s is valid status
     - this.status = s
 
-- Set Licen
+- Set License Plate (String s)
+    - if s is valid license plate
+    - this.licensePlate = s
 
-- Set 
+- Set License Plate State (String s)
+    - if s is valid license plate state
+    - this.licensePlateState = s
+
+- Set Make (String s)
+    - this.make = s
+
+- Set Color (String s)
+    - this.color = s
+
+- Set Location (Spot s)
+    - this.location = s;
+
+- Set Guest First Name (String s)
+    - if s is valid name
+    - this.guestFirstName = s
+
+- Set Guest Last Name (String s)
+    - if s is valid name
+    - this.guestLastName = s
+
+- Get Status
+    - return this.status
+
+- Get License Plate
+    - return this.licensePlate
+
+- Get License Plate State
+    - return this.licensePlateState
+
+- Get Make
+    - return this.make
+
+- Get Color
+    - return this.color
+
+- Get Location
+    - return this.location
+
+- Get Guest First Name
+    - return this.guestFirstName
+
+- Get Guest Last Name
+    - return this.guestLastName
+
+- To json
+    - piece together all attributes as json
 
 -----------------------------
 
-Vehicle Log
+Employee *
+- (Integer) garage access (0 == no access / 1 == basic valet access / 2 == master access)
+
 (Functions)
 
 -----------------------------
 
-Employee
+Log *
+- (Employee ID) eid
+- (Vehicle ID) vid
+- (String) log
+- (String) timestamp
+
+Constructor (Employee ID eid, Vehicle ID vid, String s)
+    - this.eid = eid
+    - this.vid = vid
+    - this.log = s
+    - this.timestamp = make a timestamp of the current time
+
 (Functions)
 
+- To Json
+    - convert log to json
+    - return json
+
+
 -----------------------------
 
-Employee Log
+Spot
+- (String) name
+- (Spot array) blocking
 
------------------------------
+Constructor (String name)
+    - this.name = name
 
-Log
+- Blocking (Spot s)
+    - add s to this.blocking
 
 
 -----------------------------
@@ -75,22 +179,26 @@ Constructor (api url)
 
 (Functions)
 
-- Send Vehicle to DB (Vehicle)
-    - translate vehicle to json
-    -> send json vehicle to db
+- Send Vehicle to DB (Vehicle v)
+    - s = v.toJson
+    -> send s to db
     - return success or failure
 
-- Send Vehicle Log to DB (Vehicle Log)
-    - translate vehicle log to json
-    -> send json vehicle log to db
+- Send Log to DB (Log log)
+    - s = log.toJson
+    -> send s to db
     - return success or failure
 
-- Retrieve Vehicle from DB
+- Retrieve Vehicle from DB *
     - retrieve data
     -> (call) (Vehicle) Constructor (that data)
     - return Vehicle
 
-- Retrieve Vehicle Logs from DB (Vehicle)
+- Get Employee Garage Access (Employee ID eid)
+    - retrieve employee data using eid
+    - return employee.garageAccess
+
+- Retrieve Vehicle Logs from DB (Vehicle) *
     - retrieve data
     - instantiate empty array
     -> for each log
