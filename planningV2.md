@@ -2,7 +2,7 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
-- Currently filling in Gate functions
+- 
 - During program initial set up, create all the garages spots ; then create a map of <Vehicle, Spot> called garage 
 
 Notes for later
@@ -36,21 +36,62 @@ Constructor (String url)
             -> (call) (API Call Maker) Get Employee Garage Access
             - if employee garage access > 0
                 - print "access granted"
-                -> (call) Open Gate for One Vehicle
+                -> (call) Open Entry Gate for One Vehicle
                 - create new log(eid, vid, "Gate entry")
                 -> (call) (API Call Maker) Send Log to DB (log)
-            - if employee garage acces == 0
+            - if employee garage access == 0
                 - print "no garage access, see manager"
                 - create new log(eid, vid, "Gate entry attempt, access not granted due to employee garage access level")
                 -> (call) (API Call Maker) Send Log to DB (log)
 
 - Scan in (Employee ID eid) *
-    -
+    - if eid is valid Employee ID
+        -> (call) (API Call Maker) Get Employee Garage Access
+        - if employee garage access > 1
+            - print "override access granted"
+            -> (call) Open Entry Gate for One Vehicle
+            - create new log(eid, "Gate entry - override access")
+            -> (call) (API Call Maker) Send Log to DB (log)
+        - if employee garage access <= 1
+            - print "no override access, access denied, see manager"
+            - create new log(eid, "Gate entry atempt, override access not granted to to employee garage access level")
+            -> (call) (API Call Maker) Send Log to DB (log)
 
-- Scan out *
+- Scan out (Vehicle ID vid)
+    - if vid is valid Vehicle ID
+        -> (call) (API Call Maker) Get Vehicle Status
+        - if vehicle status == "Requested"
+            - ask for input of Employee ID eid
+            - if eid is valid Employee ID
+                -> (call) (API Call Maker) Get Employee Garage Access
+                - if employee garage access > 0
+                    - print "opening gate"
+                    -> (call) Open Exit Gate for One Vehicle
+                    - create new log(eid, vid, "Gate exit")
+                    -> (call) (API Call Maker) Send Log to DB (log)
+                - if employee garage access == 0
+                    - print "no garage access, see manager"
+                    - create new log(eid, vid, "Gate exit attempt, not granted due to employee garage access level")
+                    -> (call) (API Call Maker) Send Log to DB (log)
 
-- Open Gate for One Vehicle
-    - this is a fake function for the purposes of this project, just print "gate opened for 1 vehicle"
+- Scan out (Employee ID eid)
+    - if eid is valid Employee ID
+        -> (call) (API Call Maker) Get Employee Garage Access
+        - if employee garage access > 1
+            - print "override access granted"
+            -> (call) Open Exit Gate for One Vehicle
+            - create new log(eid, "Gate exit - override access")
+            -> (call) (API Call Maker) Send Log to DB (log)
+        - if employee garage access <= 1
+            - print "no override access, exit denied, see manager"
+            - create new log(eid, "Gate exit atempt, override exit not granted to to employee garage access level")
+            -> (call) (API Call Maker) Send Log to DB (log)
+
+- Open Entry Gate for One Vehicle
+    - this is a fake function for the purposes of this project, just print "entry gate opened for 1 vehicle"
+
+- Open Exit Gate for One Vehicle Out
+    - this is a fake function for the purposes of this project, just print "exit gate opened for 1 vehicle
 
 (Main) - always actively waiting for scans in / out *
 
@@ -197,6 +238,10 @@ Constructor (api url)
 - Get Employee Garage Access (Employee ID eid)
     - retrieve employee data using eid
     - return employee.garageAccess
+
+- Get Vehicle Status (Vehicle ID vid)
+    - retrieve vehicle data using vid
+    - return vehicle.status
 
 - Retrieve Vehicle Logs from DB (Vehicle) *
     - retrieve data
