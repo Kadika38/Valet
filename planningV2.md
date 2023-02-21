@@ -2,7 +2,9 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
-- 
+- Need to learn how to update single 
+- Employee
+- POS
 - During program initial set up, create all the garages spots ; then create a map of <Vehicle, Spot> called garage 
 
 Notes for later
@@ -178,7 +180,7 @@ Employee *
 
 -----------------------------
 
-Log *
+Log
 - (Employee ID) eid
 - (Vehicle ID) vid
 - (String) log
