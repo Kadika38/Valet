@@ -2,7 +2,7 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
-- Need to learn how to update single 
+- Update Gate to update vehicle & employee data during related functions
 - Employee
 - POS
 - During program initial set up, create all the garages spots ; then create a map of <Vehicle, Spot> called garage 
@@ -39,6 +39,8 @@ Constructor (String url)
             - if employee garage access > 0
                 - print "access granted"
                 -> (call) Open Entry Gate for One Vehicle
+                - create vehicle update json ~ {id: vid, status: being parked}
+                -> (call) (API Call Maker) Update Vehicle Status (vehicle update json)
                 - create new log(eid, vid, "Gate entry")
                 -> (call) (API Call Maker) Send Log to DB (log)
             - if employee garage access == 0
@@ -69,6 +71,7 @@ Constructor (String url)
                 - if employee garage access > 0
                     - print "opening gate"
                     -> (call) Open Exit Gate for One Vehicle
+                    - create vehicle update json ~ {id: vid, status: retrieved}
                     - create new log(eid, vid, "Gate exit")
                     -> (call) (API Call Maker) Send Log to DB (log)
                 - if employee garage access == 0
@@ -225,6 +228,10 @@ Constructor (api url)
 - Send Vehicle to DB (Vehicle v)
     - s = v.toJson
     -> send s to db
+    - return success or failure
+
+- Update Vehicle Status (String json)
+    -> send json to db using route /vehicle/status
     - return success or failure
 
 - Send Log to DB (Log log)

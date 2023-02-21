@@ -84,6 +84,9 @@ public class POS {
                     //exiting vehicle process
                     break;
                 
+                case "4":
+                    apiCaller.vehicleUpdateTest();
+                
                 default:
                     System.out.println("Unknown input value");
 
