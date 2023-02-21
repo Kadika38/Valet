@@ -2,8 +2,6 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
-- Update Gate to update vehicle & employee data during related functions
-- Employee
 - POS
 - During program initial set up, create all the garages spots ; then create a map of <Vehicle, Spot> called garage 
 
@@ -177,9 +175,26 @@ Constructor (ID)
 -----------------------------
 
 Employee *
+- (String) ID
+- (String) name
 - (Integer) garage access (0 == no access / 1 == basic valet access / 2 == master access)
 
+Constructor(ID)
+    - this.ID = ID
+
 (Functions)
+
+- Set Name (String name)
+    - this.name = name
+
+- Set Garage Access (Integer i)
+    - this.garageAccess = i;
+
+- Get Name
+    - return this.name
+
+- Get Garage Access
+    - return this.garageAccess
 
 -----------------------------
 
