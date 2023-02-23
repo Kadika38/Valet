@@ -2,16 +2,28 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
-- POS
-    - currently on Employee Operations function
-- During program initial set up, create all the garages spots ; then create a map of <Vehicle, Spot> called garage 
 
 Notes for later
 - find a way to validate make and color in Vehicle setter functions
 - consider pros/cons of consolodating license plates and their states as a single license plate object, in Vehicle object
 - later on, implement limited garage access for non valet employees
+- cashier reports
 
 POS
+- (Map<Spot, Vehicle>) garage;
+- (API Call Maker) api;
+- (Employee) User
+
+Constructor(Map<Spot, Vehicle> g, String url)
+    - this.garage = g;
+    - this.api = new API Call Maker(url)
+
+Set Active User(Employee ID eid, String pw)
+    -> (call) (API Call Maker) Login
+    - if success
+        -> (call) (API Call Maker) Retrieve Employee from DB
+        - this.User = employee
+    - else print "incorrect credentials, login failure"
 
 (Functions)
 
@@ -26,11 +38,18 @@ POS
         - switch (option chosen)
             Option 1:
                 - offer to update vehicle info
-                - if vehicle status is being parked, update to in
+                - if vehicle status is being parked
+                    - update to in
                 - if changes are confirmed
                     -> (call) (API Call Maker) Send Vehicle to DB
                     - create new log(eid, vid, "Vehicle Update: ~all vehicle change info~")
                     -> (call) (API Call Maker) Send Log to DB
+                - if confirmed changes included a new parking spot
+                    - if it was in a parking spot before & new spot is not taken by another vehicle
+                        - garage.replace(old spot, null)
+                        - garage.replace(new spot, vid)
+                    - else if it was not in a parking spot before & new spot is not taken by another vehicle
+                        - garage.replace(new spot, vid)
             Option 2:
                 - offer options
                     A. Close
@@ -49,6 +68,8 @@ POS
                                         -> (call) (API Call Maker) Send Log to DB
                                         - create new vehicle update json ~ {id: vid, status: closed, paid amount: new paid amount}
                                         -> (call) (API Call Maker) Update Vehicle Closed
+                                        - if vehicle.spot.getBlockedBy isn't empty and any spot in it has a vehicle
+                                            - print "blocked by ~those vehicles~"
                                     Option b:
                                         - require Employee to log in
                                         -> (call) (API Call Maker) Employee Log In
@@ -62,6 +83,8 @@ POS
                                                     -> (call) (API Call Maker) Send Log to DB
                                                     - create new vehicle update json ~ {id: vid, status: closed, paid amount: new paid amount}
                                                     -> (call) (API Call Maker) Update Vehicle Closed
+                                                    - if vehicle.spot.getBlockedBy isn't empty and any spot in it has a vehicle
+                                                        - print "blocked by ~those vehicles~"
                                     Option c:
                                         - require Employee to log in
                                         -> (call) (API Call Maker) Employee Log In
@@ -72,6 +95,8 @@ POS
                                             -> (call) (API Call Maker) Send Log to DB
                                             - create new vehicle update json ~ {id: vid, status: closed}
                                             -> (call) (API Call Maker) Update Vehicle Status
+                                            - if vehicle.spot.getBlockedBy isn't empty and any spot in it has a vehicle
+                                                - print "blocked by ~those vehicles~"
                         Option B:
                             - if vehicle is not transient && vehicle has license plate & room number
                                 - confirm action
@@ -125,9 +150,6 @@ POS
                         -> (call) (API Call Maker) Send Employee to DB
                         - create new log(eid, "Edited Employee: ~eid~")
                         -> (call) (API Call Maker) Send Log to DB
-
-
-(Main) - this runs initial setup, and then once set up, simply runs the pos system *
 
 
 -----------------------------
@@ -389,13 +411,23 @@ Constructor (Employee ID eid, Vehicle ID vid, String s)
 
 Spot
 - (String) name
-- (Spot array) blocking
+- (Spot array) blocked by
 
 Constructor (String name)
     - this.name = name
 
 - Blocking (Spot s)
-    - add s to this.blocking
+    - s.setBlockedBy(this)
+
+- Set Blocked By (Spot s)
+    - add s to this.blockedBy
+
+- Get Blocked By
+    - new array a
+    - add spots in this.blockedBy to a
+    - for each spot s in a
+        - add s.getBlockedBy to a, if s.getBlockedBy isn't empty
+    - return a
 
 
 -----------------------------
