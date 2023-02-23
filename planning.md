@@ -100,10 +100,31 @@ POS
                 - show vehicle logs
 
 - Employee Operations
-    - offer options:
-        1. Add New Employee
-        2. Edit Existing Employee
-
+    - have employee login
+    -> (call) (API Call Maker) Employee Login
+    - if succesful login
+        -> (call) (API Call Maker) Get Employee System Access
+        - if system access > 2
+            - offer options:
+                1. Add New Employee
+                2. Edit Existing Employee
+                - switch (chosen option)
+                    Option 1:
+                        - take in employee info
+                        -> employee constructor
+                        -> (call) (API Call Maker) Send Employee to DB
+                        - create new log(eid, "Created new employee ~new employee id~")
+                        -> (call) (API Call Maker) Send Log to DB
+                    Option 2:
+                        - take in employee id eid
+                        -> (call) (API Call Maker) Retrieve Employee from DB
+                        - show employee info (show password as protected, since we won't retrieve it from the db)
+                        - take in changes
+                        - set on employee instance using setter methods
+                        - confirm final employee info
+                        -> (call) (API Call Maker) Send Employee to DB
+                        - create new log(eid, "Edited Employee: ~eid~")
+                        -> (call) (API Call Maker) Send Log to DB
 
 
 (Main) - this runs initial setup, and then once set up, simply runs the pos system *
@@ -431,6 +452,12 @@ Constructor (api url)
     - s = e.tojson
     -> send s to db using route /employee
     -> send p to db using route /employee/pw
+
+- Retrieve Employee from DB (Employee ID eid)
+    - retrieve employee info (not password though)
+    - create new employee
+    - append all info using setter methods
+    - return employee
 
 - Get Employee Garage Access (Employee ID eid)
     - retrieve employee data using eid
