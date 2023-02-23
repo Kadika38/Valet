@@ -52,13 +52,15 @@ POS
                                         - require Employee to log in
                                         -> (call) (API Call Maker) Employee Log In
                                         - if successful
-                                            - take in custom price
-                                            - confirm custom price
-                                            - confirm transaction
-                                            - create new log(eid, vid, "Vehicle Charged Custom Price: ~price~ and closed")
-                                            -> (call) (API Call Maker) Send Log to DB
-                                            - create new vehicle update json ~ {id: vid, status: closed, paid amount: new paid amount}
-                                            -> (call) (API Call Maker) Update Vehicle Closed
+                                            -> (call) (API Call Maker) Get Employee System Access
+                                                - if employee access is > 1
+                                                    - take in custom price
+                                                    - confirm custom price
+                                                    - confirm transaction
+                                                    - create new log(eid, vid, "Vehicle Charged Custom Price: ~price~ and closed")
+                                                    -> (call) (API Call Maker) Send Log to DB
+                                                    - create new vehicle update json ~ {id: vid, status: closed, paid amount: new paid amount}
+                                                    -> (call) (API Call Maker) Update Vehicle Closed
                                     Option c:
                                         - require Employee to log in
                                         -> (call) (API Call Maker) Employee Log In
@@ -95,6 +97,11 @@ POS
             Option 4:
                 -> (call) (API Call Maker) Retrieve Vehicle Logs
                 - show vehicle logs
+
+- Employee Operations
+    - offer options:
+        1. Add New Employee
+        2. Edit Existing Employee
 
 
 
