@@ -11,52 +11,92 @@ Notes for later
 - later on, implement limited garage access for non valet employees
 
 POS
-(Primary Functions)
 
-- Vehicle Enter (Vehicle ID vid)
-    - if vid is valid Vehicle ID
-        -> (call) Vehicle Constructor
-        - take in new vehicle info (license plate, license plate state, make, color, location, guest first name, guest last name)
-        - append info to new vehicle using setter methods
-        - mark vehicle status as parked using setter method
-        -> (call) Send Vehicle to DB (new vehicle)
+(Functions)
 
-- Vehicle Exit (Vehicle ID vid)
-    - if vid is valid Vehicle ID
-        -> (call) (API Call Maker) Retrieve Vehicle from DB
-        - if vehicle is transient
-            - offer options:
-                1. close vehicle, charge normal price
-                2. close vehicle, charge custom price
-                3. prepay, normal price
-                4. prepay, custom price
-        - else if vehicle is hotel guest
+- Vehicle Operations (Vehicle ID vid)
+    - if vid is valid Vehilce ID
+    -> (call) (API Call Maker) Retrieve Vehicle from DB
+    - offer options:
+        1. Update Vehicle Information
+        2. Vehicle Exit
+        3. Prepay
+        4. View Vehicle Logs
+        - switch (option chosen)
+            Option 1:
+                - offer to update vehicle info
+                - if vehicle status is being parked, update to in
+                - if changes are confirmed
+                    -> (call) (API Call Maker) Send Vehicle to DB
+                    - create new log(eid, vid, "Vehicle Update: ~all vehicle change info~")
+                    -> (call) (API Call Maker) Send Log to DB
+            Option 2:
+                - offer options
+                    A. Close
+                    B. Will Return
+                    - switch (option chosen)
+                        Option A:
+                            - offer options:
+                                a. Normal Price
+                                b. Custom Price
+                                c. Comp
+                                - switch (option chosen)
+                                    Option a:
+                                        - calculate price based on vehicle.lastTimeParked, vehicle.paidAmount, vehicle.transient, and vehicle.totalPreviousTimeParked
+                                        - confirm transaction
+                                        - create new log(eid, vid, "Vehicle Charged Normal Price: ~price~ and closed")
+                                        -> (call) (API Call Maker) Send Log to DB
+                                        - create new vehicle update json ~ {id: vid, status: closed, paid amount: new paid amount}
+                                        -> (call) (API Call Maker) Update Vehicle Closed
+                                    Option b:
+                                        - require Employee to log in
+                                        -> (call) (API Call Maker) Employee Log In
+                                        - if successful
+                                            - take in custom price
+                                            - confirm custom price
+                                            - confirm transaction
+                                            - create new log(eid, vid, "Vehicle Charged Custom Price: ~price~ and closed")
+                                            -> (call) (API Call Maker) Send Log to DB
+                                            - create new vehicle update json ~ {id: vid, status: closed, paid amount: new paid amount}
+                                            -> (call) (API Call Maker) Update Vehicle Closed
+                                    Option c:
+                                        - require Employee to log in
+                                        -> (call) (API Call Maker) Employee Log In
+                                        - if successful
+                                            - offer options for comp
+                                            - confirm
+                                            - create new log(eid, vid, "Vehicle Comped: ~reason~ - and closed")
+                                            -> (call) (API Call Maker) Send Log to DB
+                                            - create new vehicle update json ~ {id: vid, status: closed}
+                                            -> (call) (API Call Maker) Update Vehicle Status
+                        Option B:
+                            - if vehicle is not transient && vehicle has license plate & room number
+                                - confirm action
+                                - create new log(eid, vid, "Vehicle Exiting")
+                                -> (call) (API Call Maker) Send Log to DB
+                                - create new vehicle update json ~ {id: vid, status: requested}
+                                -> (call) (API Call Maker) Update Vehicle Status
+                            - else
+                                - take in license plate and/or room number
+                                - create new log(eid, vid, "Vehicle Update: ~change info~")
+                                -> (call) (API Call Maker) Send Log to DB
+                                - create vehicle update json ~ {id: vid, status: requested, license plate: lp, room number: room}
+                                -> (call) (API Call Maker) Update Vehicle Exiting
+                                - create new log(eid, vid, "Vehicle Exiting")
+                                -> (call) (API Call Maker) Send Log to DB
+            Option 3:
+                - take in prepay amount
+                - confirm amount
+                - confirm transaction
+                - create new log(eid, vid, "Prepaid: ~amount~")
+                -> (call) (API Call Maker) Send Log to DB
+                - create vehicle update json ~ {id: vid, paid amount: new paid amount}
+                -> (call) (API Call Maker) Update Vehicle Paid Amount
+            Option 4:
+                -> (call) (API Call Maker) Retrieve Vehicle Logs
+                - show vehicle logs
 
 
-
-
-        -----------------------
-            - calculate price based on vehicle.getLastTimeParked
-            - print price
-            - offer to cashier to change price using master access
-                - if accepted
-                    - take in Employee ID eid
-                    - (call) (API CAll Maker) Get Employee System Access
-                    - if employee system access > 1
-                        - take in new price OR offer comp as an option
-                        - if new price is chosen
-                            ask if new price is correct
-                                - if so
-                                    - ask for transaction completion verification
-                                        - if so
-                                            - print "transaction completed at ~price~"
-                                            - create new log(eid, vid, "Custom Charge: ~price~, vehicle marked as closed)
-        - else if vehicle is hotel guest
-            - calculate price based on vehicle.getLastTimeParked and vehicle.getTotalPreviousTimeParked
-            - update vehicle total previous time parked attribute
-
-
-(Seconday Functions)
 
 (Main) - this runs initial setup, and then once set up, simply runs the pos system *
 
@@ -80,7 +120,7 @@ Constructor (String url)
                 - print "access granted"
                 -> (call) Open Entry Gate for One Vehicle
                 - create vehicle update json ~ {id: vid, status: being parked, last time parked: ~now~}
-                -> (call) (API Call Maker) Update Vehicle Status (vehicle update json)
+                -> (call) (API Call Maker) Update Vehicle Garage Entry (vehicle update json)
                 - create new log(eid, vid, "Gate entry")
                 -> (call) (API Call Maker) Send Log to DB (log)
             - if employee garage access == 0
@@ -260,6 +300,7 @@ Employee
 - (String) name
 - (Integer) garage access (0 == no access / 1 == basic valet access / 2 == master access)
 - (Integer) system access (0 == no access / 1 == basic valet access / 2 == captain access / 3 == master access)
+- (String) password
 
 Constructor(ID)
     - this.ID = ID
@@ -275,6 +316,10 @@ Constructor(ID)
 - Set System Access (Integer i)
     - this.systemAccess = i
 
+- Set Password (String s)
+    - if s is valid password
+    - this.password = s
+
 - Get Name
     - return this.name
 
@@ -283,6 +328,12 @@ Constructor(ID)
 
 - Get System Access
     - return this.systemAccess
+
+- Get Password
+    - return this.password
+
+- To Json
+    - convert to json WITHOUT password attribute
 
 -----------------------------
 
@@ -334,18 +385,44 @@ Constructor (api url)
     - return success or failure
 
 - Update Vehicle Status (String json)
+    // route used for updating status only
     -> send json to db using route /vehicle/status
     - return success or failure
 
-- Send Log to DB (Log log)
-    - s = log.toJson
-    -> send s to db
+- Update Vehicle Gargage Entry (String json)
+    //route used for updating status and last time parked at the same time
+    -> send json to db using route /vehicle/ge
     - return success or failure
 
-- Retrieve Vehicle from DB *
+- Update Vehicle Closed (String json)
+    //route used for updating status and paid amount
+    -> send json to db using route /vehicle/closure
+    - return success or failure
+
+- Update Vehicle Exiting (String json)
+    //route used for updating vehicles license plate and room number as well as status
+    -> send json to db using route /vehicle/exit
+    - return success or failure
+
+- Update Vehicle Paid Amount (String json)
+    //route used for updating the paid amount attribute of a vehicle
+    -> send json to db using route /vehicle/pa
+    - return success or failure
+
+- Retrieve Vehicle from DB
     - retrieve data
     -> (call) (Vehicle) Constructor (that data)
     - return Vehicle
+
+- Get Vehicle Status (Vehicle ID vid)
+    - retrieve vehicle data using vid
+    - return vehicle.status
+
+- Send Employee to DB (Employee e)
+    - p = e.getPassword
+    - s = e.tojson
+    -> send s to db using route /employee
+    -> send p to db using route /employee/pw
 
 - Get Employee Garage Access (Employee ID eid)
     - retrieve employee data using eid
@@ -355,14 +432,16 @@ Constructor (api url)
     - retrieve employee data using eid
     - return employee.systemAccess
 
-- Get Vehicle Status (Vehicle ID vid)
-    - retrieve vehicle data using vid
-    - return vehicle.status
+- Employee Log In (Employee ID eid, String pw)
+    - GET route
+    - send eid and pw to route /employee/login
+    - return boolean response (login success or failure)
 
-- Retrieve Vehicle Logs from DB (Vehicle) *
-    - retrieve data
-    - instantiate empty array
-    -> for each log
-    -> (call) (Vehicle Log) Constructor (that data)
-    -> add Vehicle Log to array
-    - return array of Vehicle Logs 
+- Send Log to DB (Log log)
+    - s = log.toJson
+    -> send s to db
+    - return success or failure
+
+- Retrieve Vehicle Logs (Vehicle ID vid)
+    -> retrieve logs only pertaining to vid
+    - return array of logs
