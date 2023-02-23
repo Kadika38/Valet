@@ -13,6 +13,48 @@ Notes for later
 POS
 (Primary Functions)
 
+- Vehicle Enter (Vehicle ID vid)
+    - if vid is valid Vehicle ID
+        -> (call) Vehicle Constructor
+        - take in new vehicle info (license plate, license plate state, make, color, location, guest first name, guest last name)
+        - append info to new vehicle using setter methods
+        - mark vehicle status as parked using setter method
+        -> (call) Send Vehicle to DB (new vehicle)
+
+- Vehicle Exit (Vehicle ID vid)
+    - if vid is valid Vehicle ID
+        -> (call) (API Call Maker) Retrieve Vehicle from DB
+        - if vehicle is transient
+            - offer options:
+                1. close vehicle, charge normal price
+                2. close vehicle, charge custom price
+                3. prepay, normal price
+                4. prepay, custom price
+        - else if vehicle is hotel guest
+
+
+
+
+        -----------------------
+            - calculate price based on vehicle.getLastTimeParked
+            - print price
+            - offer to cashier to change price using master access
+                - if accepted
+                    - take in Employee ID eid
+                    - (call) (API CAll Maker) Get Employee System Access
+                    - if employee system access > 1
+                        - take in new price OR offer comp as an option
+                        - if new price is chosen
+                            ask if new price is correct
+                                - if so
+                                    - ask for transaction completion verification
+                                        - if so
+                                            - print "transaction completed at ~price~"
+                                            - create new log(eid, vid, "Custom Charge: ~price~, vehicle marked as closed)
+        - else if vehicle is hotel guest
+            - calculate price based on vehicle.getLastTimeParked and vehicle.getTotalPreviousTimeParked
+            - update vehicle total previous time parked attribute
+
 
 (Seconday Functions)
 
@@ -37,7 +79,7 @@ Constructor (String url)
             - if employee garage access > 0
                 - print "access granted"
                 -> (call) Open Entry Gate for One Vehicle
-                - create vehicle update json ~ {id: vid, status: being parked}
+                - create vehicle update json ~ {id: vid, status: being parked, last time parked: ~now~}
                 -> (call) (API Call Maker) Update Vehicle Status (vehicle update json)
                 - create new log(eid, vid, "Gate entry")
                 -> (call) (API Call Maker) Send Log to DB (log)
@@ -110,6 +152,11 @@ Vehicle
 - (Spot) Location
 - (String) Guest First Name
 - (String) Guest Last Name
+- (String) Last parked
+- (Integer) total previous time parked
+- (Boolean) Transient
+- (Integer) Room Number
+- (Integer) Paid Amount
 
 Constructor (ID)
     - this.ID = ID
@@ -145,6 +192,25 @@ Constructor (ID)
     - if s is valid name
     - this.guestLastName = s
 
+- Set Last Time Parked (String s)
+    - if s is valid timestamp
+    - this.lastTimeParked = s
+
+- Set Total Previous Time Parked (Integer i)
+    - if i is valid amount of time
+    - this.totalPreviousTimeParked = i
+
+- Set Transient (Boolean b)
+    - this.transient = b
+
+- Set Room Number (Integer i)
+    - if i is valid room number
+    - this.roomNumber = i
+
+- Set Paid Amount (Integer i)
+    - if i is valid dollar amount
+    - this.paidAmount = i
+
 - Get Status
     - return this.status
 
@@ -169,15 +235,31 @@ Constructor (ID)
 - Get Guest Last Name
     - return this.guestLastName
 
+- Get Last Time Parked
+    - return this.lastTimeParked
+
+- Get Total Previous Time Parked
+    - return this.totalPreviousTimeParked
+
+- Get Transient
+    - return this.transient
+
+- Get Room Number
+    - return this.roomNumber
+
+- Get Paid Amount
+    - return this.getPaidAmount
+
 - To json
     - piece together all attributes as json
 
 -----------------------------
 
-Employee *
+Employee
 - (String) ID
 - (String) name
 - (Integer) garage access (0 == no access / 1 == basic valet access / 2 == master access)
+- (Integer) system access (0 == no access / 1 == basic valet access / 2 == captain access / 3 == master access)
 
 Constructor(ID)
     - this.ID = ID
@@ -190,11 +272,17 @@ Constructor(ID)
 - Set Garage Access (Integer i)
     - this.garageAccess = i;
 
+- Set System Access (Integer i)
+    - this.systemAccess = i
+
 - Get Name
     - return this.name
 
 - Get Garage Access
     - return this.garageAccess
+
+- Get System Access
+    - return this.systemAccess
 
 -----------------------------
 
@@ -262,6 +350,10 @@ Constructor (api url)
 - Get Employee Garage Access (Employee ID eid)
     - retrieve employee data using eid
     - return employee.garageAccess
+
+- Get Employee System Access (Employee ID eid)
+    - retrieve employee data using eid
+    - return employee.systemAccess
 
 - Get Vehicle Status (Vehicle ID vid)
     - retrieve vehicle data using vid
