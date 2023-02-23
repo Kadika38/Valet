@@ -3,6 +3,7 @@ Trying to map out all necessary functions
 
 Notes / Todo
 - POS
+    - currently on Employee Operations function
 - During program initial set up, create all the garages spots ; then create a map of <Vehicle, Spot> called garage 
 
 Notes for later
