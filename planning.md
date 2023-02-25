@@ -238,7 +238,7 @@ Vehicle
 - (String) Status ("In" / "Being Parked" / "Requested" / "Retrieved" / "Out" / "Closed")
 - (String) License Plate
 - (String) License Plate State
-- (String Make
+- (String) Make
 - (String) Color
 - (Spot) Location
 - (String) Guest First Name
