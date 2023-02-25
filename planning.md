@@ -8,6 +8,7 @@ Notes for later
 - consider pros/cons of consolodating license plates and their states as a single license plate object, in Vehicle object
 - later on, implement limited garage access for non valet employees
 - cashier reports
+- might want to validate dates in the Vehicle setLastTimeParked setter method
 
 POS
 - (Map<Spot, Vehicle>) garage;
