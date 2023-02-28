@@ -4,12 +4,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class APICallMaker {
+public class APICallMakerOld {
     String url;
 
     String testInput = "{\"licensePlate\": \"test\", \"color\": \"test2\"}";
     
-    public APICallMaker(String url) {
+    public APICallMakerOld(String url) {
         this.url = url;
     }
 
