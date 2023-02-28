@@ -430,6 +430,9 @@ Constructor (String name)
         - add s.getBlockedBy to a, if s.getBlockedBy isn't empty
     - return a
 
+- Get Name
+    - return this.name
+
 
 -----------------------------
 

@@ -17,6 +17,8 @@ public class Vehicle {
     Vehicle(String vid) {
         if (isValidVehicleID(vid)) {
             this.vid = vid;
+        } else {
+            this.vid = null;
         }
         this.status = null;
         this.licensePlate = null;
@@ -161,7 +163,50 @@ public class Vehicle {
     }
 
     public String toJson() {
+        String s = "{";
+        s += "\"vid\": \"" + this.vid + "\"";
+        if (this.status != null) {
+            s += ", \"status\": \"" + this.status + "\"";
+        }
+        if (this.licensePlate != null) {
+            s += ", \"license plate\": \"" + this.licensePlate + "\"";
+        }
+        if (this.licensePlateState != null) {
+            s += ", \"license plate state\": \"" + this.licensePlateState + "\"";
+        }
+        if (this.make != null) {
+            s += ", \"make\": \"" + this.make + "\"";
+        }
+        if (this.color != null) {
+            s += ", \"color\": \"" + this.color + "\"";
+        }
+        if (this.location != null) {
+            s += ", \"location\": \"" + this.location.getName() + "\"";
+        }
+        if (this.guestFirstName != null) {
+            s += ", \"guest first name\": \"" + this.guestFirstName + "\"";
+        }
+        if (this.guestLastName != null) {
+            s += ", \"guest last name\": \"" + this.guestLastName + "\"";
+        }
+        if (this.lastTimeParked != null) {
+            s += ", \"last time parked\": \"" + this.lastTimeParked + "\"";
+        }
+        if (this.totalPreviousTimeParked != null) {
+            s += ", \"total previous time parked\": \"" + this.totalPreviousTimeParked + "\"";
+        }
+        if (this.transientOnly != null) {
+            s += ", \"transient only\": \"" + this.transientOnly + "\"";
+        }
+        if (this.roomNumber != null) {
+            s += ", \"room number\": \"" + this.roomNumber + "\"";
+        }
+        if (this.paidAmount != null) {
+            s += ", \"paid amount\": \"" + this.paidAmount + "\"";
+        }
+        s += "}";
 
+        return s;
     }
 
     // Used in this class and available publicly for validating vid's
