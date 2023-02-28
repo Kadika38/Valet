@@ -93,6 +93,64 @@ public class Vehicle {
         return num;
     }
 
+    // Getter Methods
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public String getLicensePlate() {
+        return this.licensePlate;
+    }
+
+    public String getLicensePlateState() {
+        return this.licensePlateState;
+    }
+
+    public String getMake() {
+        return this.make;
+    }
+
+    public String getColor() {
+        return this.color;
+    }
+
+    public Spot getLocation() {
+        return this.location;
+    }
+
+    public String getGuestFirstName() {
+        return this.guestFirstName;
+    }
+
+    public String getGuestLastName() {
+        return this.guestLastName;
+    }
+
+    public String getLastTimeParked() {
+        return this.lastTimeParked;
+    }
+
+    public Integer getTotalPreviousTimeParked() {
+        return this.totalPreviousTimeParked;
+    }
+
+    public Boolean getTransientOnly() {
+        return this.transientOnly;
+    }
+
+    public Integer getRoomNumber() {
+        return this.roomNumber;
+    }
+
+    public Integer getPaidAmount() {
+        return this.paidAmount;
+    }
+
+    public String toJson() {
+        
+    }
+
     // Used in this class and available publicly for validating vid's
     // Vehicle ID's start with the letter V and are 8 characters long including the leading V
     public static boolean isValidVehicleID(String s) {
