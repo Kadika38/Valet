@@ -36,5 +36,27 @@ public class Log {
         this.timestamp += date;
     }
 
-    
+    // Methods
+
+    public String toJson() {
+        String s = "{";
+        if (this.eid != null) {
+            s += "\"eid\": \"" + this.eid + "\"";
+        }
+        if (this.vid != null) {
+            if (this.eid != null) {
+                s += ", ";
+            }
+            s += "\"vid\": \"" + this.vid + "\"";
+        }
+        if (this.vid != null || this.eid != null) {
+            s += ", ";
+        }
+        s += "\"log\": " + this.log + "\"";
+        s += ", \"timestamp\": \"" + this.timestamp + "\"";
+        s += "}";
+
+        return s;
+
+    }
 }
