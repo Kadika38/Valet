@@ -7,7 +7,7 @@ import java.net.http.HttpResponse;
 public class APICallMakerOld {
     String url;
 
-    String testInput = "{\"licensePlate\": \"test\", \"color\": \"test2\"}";
+    String testInput = "{\"licensePlate\": \"test\"}";
     
     public APICallMakerOld(String url) {
         this.url = url;
@@ -38,15 +38,14 @@ public class APICallMakerOld {
         }
     }
 
-    public void vehicleUpdateTest() {
-        String s = this.testInput;
+    public void requestTest() {
         HttpClient client = HttpClient.newHttpClient();
 
         try {
             var request = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(s))
+            .GET()
             .header("Content-Type", "application/json")
-            .uri(URI.create(this.url + "/vehicle"))
+            .uri(URI.create(this.url + "/vehicle/find/" + "test"))
             .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

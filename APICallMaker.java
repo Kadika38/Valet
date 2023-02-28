@@ -44,30 +44,34 @@ public class APICallMaker {
 
     public boolean sendVehicleToDB(Vehicle v) {
         String json = v.toJson();
-        return sendJsonToDB(json, "/vehicle");
+        return sendJsonToDB(json, "/vehicle/update/new");
     }
 
     public boolean updateVehicleStatus(String json) {
-        return sendJsonToDB(json, "/vehicle/status");
+        return sendJsonToDB(json, "/vehicle/update/status");
     }
 
     public boolean updateVehicleGarageEntry(String json) {
-        return sendJsonToDB(json, "/vehicle/ge");
+        return sendJsonToDB(json, "/vehicle/update/ge");
     }
 
     public boolean updateVehicleClosed(String json) {
-        return sendJsonToDB(json, "/vehicle/closure");
+        return sendJsonToDB(json, "/vehicle/update/closure");
     }
 
     public boolean updateVehicleExiting(String json) {
-        return sendJsonToDB(json, "/vehicle/exit");
+        return sendJsonToDB(json, "/vehicle/update/exit");
     }
 
     public boolean updateVehiclePaidAmount(String json) {
-        return sendJsonToDB(json, "/vehicle/pa");
+        return sendJsonToDB(json, "/vehicle/update/pa");
     }
 
-    
+    public Vehicle retrieveVehicleFromDB(String vid) {
+        if (Vehicle.isValidVehicleID(vid)) {
+
+        }
+    }
 
 
 }
