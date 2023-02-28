@@ -402,6 +402,11 @@ Constructor (Employee ID eid, Vehicle ID vid, String s)
     - this.log = s
     - this.timestamp = make a timestamp of the current time
 
+Constructor (Employee ID eid, String s)
+    - this.eid = eid
+    - this.log = s
+    - this.timestamp = make a timestamp of the current time
+
 (Functions)
 
 - To Json
