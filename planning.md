@@ -10,6 +10,7 @@ Notes for later
 - cashier reports
 - might want to validate dates in the Vehicle setLastTimeParked setter method
 - add more validation to passwords for employees
+- consider modifying the Log class setup to be a parent class with two children so that timestamp generation doesn't have to be rewritten for both types
 
 POS
 - (Map<Spot, Vehicle>) garage;
