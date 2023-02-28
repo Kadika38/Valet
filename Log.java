@@ -57,6 +57,5 @@ public class Log {
         s += "}";
 
         return s;
-
     }
 }

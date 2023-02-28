@@ -424,7 +424,7 @@ Spot
 Constructor (String name)
     - this.name = name
 
-- Blocking (Spot s)
+- Set Blocking (Spot s)
     - s.setBlockedBy(this)
 
 - Set Blocked By (Spot s)
