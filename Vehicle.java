@@ -162,6 +162,8 @@ public class Vehicle {
         return this.paidAmount;
     }
 
+    // Other methods
+
     public String toJson() {
         String s = "{";
         s += "\"vid\": \"" + this.vid + "\"";

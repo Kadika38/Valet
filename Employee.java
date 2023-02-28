@@ -63,6 +63,25 @@ public class Employee {
         return this.password;
     }
 
+    // Other methods
+
+    public String toJson() {
+        String s = "{";
+        s += "\"eid\": \"" + this.eid + "\"";
+        if (this.name != null) {
+            s += ", \"name\": \"" + this.name + "\"";
+        }
+        if (this.garageAccess != null) {
+            s += ", \"garage access\": \"" + this.garageAccess + "\"";
+        }
+        if (this.systemAccess != null) {
+            s += ", \"system access\": \"" + this.systemAccess + "\"";
+        }
+        s += "}";
+
+        return s;
+    }
+
 
     // Used in this class and available publicly for validating eid's
     // Employee ID's start with the letter E and are 8 characters long including the leading E
