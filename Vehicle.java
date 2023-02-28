@@ -18,6 +18,19 @@ public class Vehicle {
         if (isValidVehicleID(vid)) {
             this.vid = vid;
         }
+        this.status = null;
+        this.licensePlate = null;
+        this.licensePlateState = null;
+        this.make = null;
+        this.color = null;
+        this.location = null;
+        this.guestFirstName = null;
+        this.guestLastName = null;
+        this.lastTimeParked = null;
+        this.totalPreviousTimeParked = null;
+        this.transientOnly = null;
+        this.roomNumber = null;
+        this.paidAmount = null;
     }
 
     // Setter Methods
@@ -148,7 +161,7 @@ public class Vehicle {
     }
 
     public String toJson() {
-        
+
     }
 
     // Used in this class and available publicly for validating vid's
