@@ -23,12 +23,10 @@ public class APICallMaker {
         return request;
     }
 
-    public boolean sendVehicleToDB(Vehicle v) {
-        String json = v.toJson();
-
+    private boolean sendJsonToDB(String json, String path) {
         try {
 
-            HttpRequest request = createRequest(json, "/vehicle");
+            HttpRequest request = createRequest(json, path);
 
             //send request
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -43,4 +41,33 @@ public class APICallMaker {
             return false;
         }
     }
+
+    public boolean sendVehicleToDB(Vehicle v) {
+        String json = v.toJson();
+        return sendJsonToDB(json, "/vehicle");
+    }
+
+    public boolean updateVehicleStatus(String json) {
+        return sendJsonToDB(json, "/vehicle/status");
+    }
+
+    public boolean updateVehicleGarageEntry(String json) {
+        return sendJsonToDB(json, "/vehicle/ge");
+    }
+
+    public boolean updateVehicleClosed(String json) {
+        return sendJsonToDB(json, "/vehicle/closure");
+    }
+
+    public boolean updateVehicleExiting(String json) {
+        return sendJsonToDB(json, "/vehicle/exit");
+    }
+
+    public boolean updateVehiclePaidAmount(String json) {
+        return sendJsonToDB(json, "/vehicle/pa");
+    }
+
+    
+
+
 }
