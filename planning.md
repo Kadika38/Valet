@@ -9,6 +9,7 @@ Notes for later
 - later on, implement limited garage access for non valet employees
 - cashier reports
 - might want to validate dates in the Vehicle setLastTimeParked setter method
+- add more validation to passwords for employees
 
 POS
 - (Map<Spot, Vehicle>) garage;
