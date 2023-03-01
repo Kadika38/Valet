@@ -50,9 +50,12 @@ public class APICallMakerOld {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println("Status code: " + response.statusCode());                            
-            System.out.println("Headers: " + response.headers().allValues("content-type"));
-            System.out.println("Body: " + response.body());
+            //System.out.println("Status code: " + response.statusCode());                            
+            //System.out.println("Headers: " + response.headers().allValues("content-type"));
+            //System.out.println("Body: " + response.body());
+
+            //work with json here
+            System.out.println();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

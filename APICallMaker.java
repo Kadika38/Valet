@@ -13,9 +13,19 @@ public class APICallMaker {
         client = HttpClient.newHttpClient();
     }
 
-    private HttpRequest createRequest(String json, String path) {
+    private HttpRequest createPutRequest(String json, String path) {
         var request = HttpRequest.newBuilder()
             .PUT(HttpRequest.BodyPublishers.ofString(json))
+            .header("Content-Type", "application/json")
+            .uri(URI.create(this.url + path))
+            .build();
+        
+        return request;
+    }
+
+    private HttpRequest createGetRequest(String path) {
+        var request = HttpRequest.newBuilder()
+            .GET()
             .header("Content-Type", "application/json")
             .uri(URI.create(this.url + path))
             .build();
@@ -26,7 +36,26 @@ public class APICallMaker {
     private boolean sendJsonToDB(String json, String path) {
         try {
 
-            HttpRequest request = createRequest(json, path);
+            HttpRequest request = createPutRequest(json, path);
+
+            //send request
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean sendGetRequestToDB(String path) {
+        try {
+
+            HttpRequest request = createGetRequest(path);
 
             //send request
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -69,7 +98,8 @@ public class APICallMaker {
 
     public Vehicle retrieveVehicleFromDB(String vid) {
         if (Vehicle.isValidVehicleID(vid)) {
-
+            String p = "/vehicle/find/" + vid;
+            return sendGetRequestToDB(p);
         }
     }
 
