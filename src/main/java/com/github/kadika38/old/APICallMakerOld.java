@@ -55,6 +55,7 @@ public class APICallMakerOld {
             //System.out.println("Body: " + response.body());
 
             //work with json here
+            ObjectMapper mapper = new ObjectMapper();
             System.out.println();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
