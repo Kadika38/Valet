@@ -4,6 +4,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class APICallMakerOld {
     String url;
 
@@ -20,7 +23,7 @@ public class APICallMakerOld {
         try {
 
             //create request
-            var request = HttpRequest.newBuilder()
+            HttpRequest request = HttpRequest.newBuilder()
             .PUT(HttpRequest.BodyPublishers.ofString(vehicleData))
             .header("Content-Type", "application/json")
             .uri(URI.create(this.url + "/vehicle"))
@@ -42,7 +45,7 @@ public class APICallMakerOld {
         HttpClient client = HttpClient.newHttpClient();
 
         try {
-            var request = HttpRequest.newBuilder()
+            HttpRequest request = HttpRequest.newBuilder()
             .GET()
             .header("Content-Type", "application/json")
             .uri(URI.create(this.url + "/vehicle/find/" + "test"))
@@ -56,7 +59,9 @@ public class APICallMakerOld {
 
             //work with json here
             ObjectMapper mapper = new ObjectMapper();
-            System.out.println();
+            JsonNode responseNode = mapper.readTree(response.body());
+
+            System.out.println(responseNode.get("color"));
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

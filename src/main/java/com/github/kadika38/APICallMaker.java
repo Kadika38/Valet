@@ -14,7 +14,7 @@ public class APICallMaker {
     }
 
     private HttpRequest createPutRequest(String json, String path) {
-        var request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
             .PUT(HttpRequest.BodyPublishers.ofString(json))
             .header("Content-Type", "application/json")
             .uri(URI.create(this.url + path))
@@ -24,7 +24,7 @@ public class APICallMaker {
     }
 
     private HttpRequest createGetRequest(String path) {
-        var request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
             .GET()
             .header("Content-Type", "application/json")
             .uri(URI.create(this.url + path))
@@ -99,8 +99,12 @@ public class APICallMaker {
     public Vehicle retrieveVehicleFromDB(String vid) {
         if (Vehicle.isValidVehicleID(vid)) {
             String p = "/vehicle/find/" + vid;
-            return sendGetRequestToDB(p);
+
+            // sendGetRequestToDB(p);
         }
+        //replace this later
+        Vehicle blah = new Vehicle("blah");
+        return blah;
     }
 
 

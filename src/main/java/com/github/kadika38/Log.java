@@ -1,3 +1,5 @@
+import java.util.Date;
+
 public class Log {
     String eid;
     String vid;
@@ -17,7 +19,7 @@ public class Log {
         }
         this.log = log;
         // create a new date, convert it to a string and assign it to this.timestamp
-        var date = new java.util.Date();
+        Date date = new java.util.Date();
         this.timestamp = "";
         this.timestamp += date;
     }
@@ -31,7 +33,7 @@ public class Log {
         this.vid = null;
         this.log = log;
         // create a new date, convert it to a string and assign it to this.timestamp
-        var date = new java.util.Date();
+        Date date = new java.util.Date();
         this.timestamp = "";
         this.timestamp += date;
     }

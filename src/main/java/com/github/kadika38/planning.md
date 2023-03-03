@@ -2,6 +2,7 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
+- Maven sees everything as one app, each single file doesn't have access to the dependencies via Maven.  Re-add App.java, and in the main method there you can run tests and eventually it will run the simulation to show how the project works.
 
 Notes for later
 - find a way to validate make and color in Vehicle setter functions
