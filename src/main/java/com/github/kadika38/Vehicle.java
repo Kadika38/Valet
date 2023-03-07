@@ -47,23 +47,21 @@ public class Vehicle {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode responseNode = mapper.readTree(json);
             
-            if (responseNode.get("vid") != null && !(responseNode.get("vid") instanceof NullNode)) {
-                this.vid = responseNode.get("vid").asText();
+            this.vid = responseNode.get("vid").asText();
 
-                this.status = responseNode.get("status").asText();
-                this.licensePlate = responseNode.get("licensePlate").asText();
-                this.licensePlateState = responseNode.get("licensePlateState").asText();
-                this.make = responseNode.get("make").asText();
-                this.color = responseNode.get("color").asText();
-                this.location = responseNode.get("location").asText();
-                this.guestFirstName = responseNode.get("guestFirstName").asText();
-                this.guestLastName = responseNode.get("guestLastName").asText();
-                this.lastTimeParked = responseNode.get("lastTimeParked").asText();
-                this.totalPreviousTimeParked = responseNode.get("totalPreviousTimeParked").asInt();
-                this.transientOnly = responseNode.get("transientOnly").asBoolean();
-                this.roomNumber = responseNode.get("roomNumber").asInt();
-                this.paidAmount = responseNode.get("paidAmount").asInt();
-            }
+            this.status = responseNode.get("status").asText();
+            this.licensePlate = responseNode.get("licensePlate").asText();
+            this.licensePlateState = responseNode.get("licensePlateState").asText();
+            this.make = responseNode.get("make").asText();
+            this.color = responseNode.get("color").asText();
+            this.location = responseNode.get("location").asText();
+            this.guestFirstName = responseNode.get("guestFirstName").asText();
+            this.guestLastName = responseNode.get("guestLastName").asText();
+            this.lastTimeParked = responseNode.get("lastTimeParked").asText();
+            this.totalPreviousTimeParked = responseNode.get("totalPreviousTimeParked").asInt();
+            this.transientOnly = responseNode.get("transientOnly").asBoolean();
+            this.roomNumber = responseNode.get("roomNumber").asInt();
+            this.paidAmount = responseNode.get("paidAmount").asInt();
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();

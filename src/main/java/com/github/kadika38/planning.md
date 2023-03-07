@@ -2,7 +2,7 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
-- Rework Spot class out of Vehicle, now only used in the garage set up in the runtime
+- 
 
 Notes for later
 - find a way to validate make and color in Vehicle setter functions

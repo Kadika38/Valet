@@ -1,5 +1,9 @@
 package com.github.kadika38;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class Employee {
     String eid;
     String name;
@@ -17,6 +21,22 @@ public class Employee {
         this.garageAccess = null;
         this.systemAccess = null;
         this.password = null;
+    }
+
+    Employee(String json, boolean useJson) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode responseNode = mapper.readTree(json);
+            
+            this.eid = responseNode.get("eid").asText();
+            this.name = responseNode.get("name").asText();
+            this.garageAccess = responseNode.get("garageAccess").asInt();
+            this.systemAccess = responseNode.get("systemAccess").asInt();
+            this.password = null;
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     // Setter methods
@@ -48,6 +68,10 @@ public class Employee {
     }
 
     // Getter methods
+
+    public String getEid() {
+        return this.eid;
+    }
 
     public String getName() {
         return this.name;

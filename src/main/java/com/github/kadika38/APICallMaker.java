@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -115,6 +116,93 @@ public class APICallMaker {
 
         Vehicle failed = new Vehicle("");
         return failed;
+    }
+
+    public String getVehicleStatus(String vid) {
+        if (Vehicle.isValidVehicleID(vid)) {
+            String p = "/vehicle/find/" + vid;
+
+            String response = sendGetRequestToDB(p);
+            String status = "";
+
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode responseNode = mapper.readTree(response);
+                status = responseNode.get("status").asText();
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            return status;
+        }
+
+        return null;
+    }
+
+    public boolean sendEmployeeToDb(Employee e) {
+        String p = e.getPassword();
+        String pwJson = "{\"pw\": \"" + p + "\"}";
+        String json = e.toJson();
+        String eid = e.getEid();
+
+        Boolean a = sendJsonToDB(json, "/employee");
+        Boolean b = sendJsonToDB(pwJson, "/employee/pw/" + eid);
+
+        return a && b;
+    }
+
+    public Employee retrieveEmployeeFromDB(String eid) {
+        String response = sendGetRequestToDB("/employee/find/" + eid);
+
+        Employee e = new Employee(response, true);
+
+        return e;
+    }
+
+    public Integer getEmployeeGarageAccess(String eid) {
+        String response = sendGetRequestToDB("/employee/find/" + eid);
+        Integer access = 0;
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode responseNode = mapper.readTree(response);
+            access = responseNode.get("garageAccess").asInt();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return access;
+    }
+
+    public Integer getEmployeeSystemAccess(String eid) {
+        String response = sendGetRequestToDB("/employee/find/" + eid);
+        Integer access = 0;
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode responseNode = mapper.readTree(response);
+            access = responseNode.get("systemAccess").asInt();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return access;
+    }
+
+    public boolean employeeLogIn(String eid, String pw) {
+        String json = "{\"pw\": \":" + pw + "\"}";
+
+        return sendJsonToDB(json, "/employee/login/" + eid);
+    }
+
+    public boolean sendLogToDB(Log log) {
+        String json = log.toJson();
+        return sendJsonToDB(json, "/log");
+    }
+
+    public ArrayList<Log> retrieveVehicleLogs(String vid) {
+        String response = sendGetRequestToDB("/log/vehicle/" + vid);
+        
     }
 
 
