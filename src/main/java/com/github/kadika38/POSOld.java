@@ -1,14 +1,15 @@
+package com.github.kadika38;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class POS {
+public class POSOld {
     
     //MUST SPECIFY AWS PATH IN ARGS[0] !!!
-    public static void main(String[] args) {
+    public static void use(String arg) {
         boolean exit = false;
         Scanner scanner = new Scanner(System.in);
-        APICallMakerOld apiCaller = new APICallMakerOld(args[0]);
+        APICallMakerOld apiCaller = new APICallMakerOld(arg);
 
         System.out.println("Welcome to the automated Valet system!");
 

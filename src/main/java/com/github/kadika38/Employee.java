@@ -1,3 +1,5 @@
+package com.github.kadika38;
+
 public class Employee {
     String eid;
     String name;

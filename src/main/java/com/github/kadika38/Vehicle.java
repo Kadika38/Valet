@@ -1,3 +1,5 @@
+package com.github.kadika38;
+
 public class Vehicle {
     String vid;
     String status;

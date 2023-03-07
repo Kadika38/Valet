@@ -1,3 +1,5 @@
+package com.github.kadika38;
+
 import java.util.ArrayList;
 
 public class Spot {
