@@ -1,5 +1,10 @@
 package com.github.kadika38;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
+
 public class Vehicle {
     String vid;
     String status;
@@ -7,7 +12,7 @@ public class Vehicle {
     String licensePlateState;
     String make;
     String color;
-    Spot location;
+    String location;
     String guestFirstName;
     String guestLastName;
     String lastTimeParked;
@@ -35,6 +40,34 @@ public class Vehicle {
         this.transientOnly = null;
         this.roomNumber = null;
         this.paidAmount = null;
+    }
+
+    Vehicle(String json, boolean useJson) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode responseNode = mapper.readTree(json);
+            
+            if (responseNode.get("vid") != null && !(responseNode.get("vid") instanceof NullNode)) {
+                this.vid = responseNode.get("vid").asText();
+
+                this.status = responseNode.get("status").asText();
+                this.licensePlate = responseNode.get("licensePlate").asText();
+                this.licensePlateState = responseNode.get("licensePlateState").asText();
+                this.make = responseNode.get("make").asText();
+                this.color = responseNode.get("color").asText();
+                this.location = responseNode.get("location").asText();
+                this.guestFirstName = responseNode.get("guestFirstName").asText();
+                this.guestLastName = responseNode.get("guestLastName").asText();
+                this.lastTimeParked = responseNode.get("lastTimeParked").asText();
+                this.totalPreviousTimeParked = responseNode.get("totalPreviousTimeParked").asInt();
+                this.transientOnly = responseNode.get("transientOnly").asBoolean();
+                this.roomNumber = responseNode.get("roomNumber").asInt();
+                this.paidAmount = responseNode.get("paidAmount").asInt();
+            }
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     // Setter Methods
@@ -70,7 +103,7 @@ public class Vehicle {
         return color;
     }
 
-    public Spot setLocation(Spot s) {
+    public String setLocation(String s) {
         this.location = s;
         return s;
     }
@@ -132,7 +165,7 @@ public class Vehicle {
         return this.color;
     }
 
-    public Spot getLocation() {
+    public String getLocation() {
         return this.location;
     }
 
@@ -185,7 +218,7 @@ public class Vehicle {
             s += ", \"color\": \"" + this.color + "\"";
         }
         if (this.location != null) {
-            s += ", \"location\": \"" + this.location.getName() + "\"";
+            s += ", \"location\": \"" + this.location + "\"";
         }
         if (this.guestFirstName != null) {
             s += ", \"guest first name\": \"" + this.guestFirstName + "\"";

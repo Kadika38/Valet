@@ -6,6 +6,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class APICallMaker {
     String url;
     HttpClient client;
@@ -54,7 +59,7 @@ public class APICallMaker {
         }
     }
 
-    private boolean sendGetRequestToDB(String path) {
+    private String sendGetRequestToDB(String path) {
         try {
 
             HttpRequest request = createGetRequest(path);
@@ -63,13 +68,13 @@ public class APICallMaker {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                return true;
+                return response.body();
             } else {
-                return false;
+                return "{}";
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            return false;
+            return "{}";
         }
     }
 
@@ -102,11 +107,14 @@ public class APICallMaker {
         if (Vehicle.isValidVehicleID(vid)) {
             String p = "/vehicle/find/" + vid;
 
-            // sendGetRequestToDB(p);
+            String response = sendGetRequestToDB(p);
+
+            Vehicle v = new Vehicle(response, true);
+            return v;
         }
-        //replace this later
-        Vehicle blah = new Vehicle("blah");
-        return blah;
+
+        Vehicle failed = new Vehicle("");
+        return failed;
     }
 
 
