@@ -49,7 +49,7 @@ public class APICallMakerOld {
             HttpRequest request = HttpRequest.newBuilder()
             .GET()
             .header("Content-Type", "application/json")
-            .uri(URI.create(this.url + "/vehicle/find/" + "test"))
+            .uri(URI.create(this.url + "/vehicle/all"))
             .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -61,8 +61,11 @@ public class APICallMakerOld {
             //work with json here
             ObjectMapper mapper = new ObjectMapper();
             JsonNode responseNode = mapper.readTree(response.body());
+            for (JsonNode testVehicle : responseNode) {
+                System.out.println(testVehicle.get("make").asText());
+            }
 
-            System.out.println(responseNode.get("color"));
+            System.out.println(response.body());
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

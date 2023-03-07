@@ -201,8 +201,11 @@ public class APICallMaker {
     }
 
     public ArrayList<Log> retrieveVehicleLogs(String vid) {
-        String response = sendGetRequestToDB("/log/vehicle/" + vid);
-        
+        //String response = sendGetRequestToDB("/log/vehicle/" + vid);
+        //need to test working with multiple object responses
+
+        //delete late
+        return new ArrayList<Log>();
     }
 
 
