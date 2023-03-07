@@ -201,11 +201,24 @@ public class APICallMaker {
     }
 
     public ArrayList<Log> retrieveVehicleLogs(String vid) {
-        //String response = sendGetRequestToDB("/log/vehicle/" + vid);
-        //need to test working with multiple object responses
+        String response = sendGetRequestToDB("/log/vehicle/" + vid);
+        ArrayList<Log> logs = new ArrayList<Log>();
+        
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode responseNode = mapper.readTree(response);
+            for (JsonNode logJsonNode : responseNode) {
+                String eid = logJsonNode.get("eid").asText();
+                String log = logJsonNode.get("log").asText();
+                Log newLog = new Log(eid, vid, log);
+                logs.add(newLog);
+            }
 
-        //delete late
-        return new ArrayList<Log>();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return logs;
     }
 
 
