@@ -167,7 +167,7 @@ Constructor (String url)
 (Functions)
 
 - Scan in (Vehicle ID vid)
-    - if vid is valid Vehicle ID
+    - if vid is valid Vehicle ID    
         - ask for input of Employee ID eid
         - if eid is valid Employee ID
             -> (call) (API Call Maker) Get Employee Garage Access
