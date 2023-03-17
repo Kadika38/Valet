@@ -168,6 +168,25 @@ public class POS {
                             break;
                         case "2":
                             // Vehicle Exit
+                            System.out.println("Vehicle Exiting:\n1) Close\n2) Will Return");
+                            int veFailCount = 0;
+                            boolean ve = true;
+                            while (ve) {
+                                String veOption = scanner.nextLine();
+                                switch (veOption) {
+                                    case "1":
+                                        // close
+                                        break;
+                                    case "2":
+                                        // will return
+                                        break;
+                                    case "E":
+                                        // exit
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
                             break;
                         case "3":
                             // Prepay
