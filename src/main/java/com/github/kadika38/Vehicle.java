@@ -1,5 +1,10 @@
 package com.github.kadika38;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.util.Date;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -176,7 +181,18 @@ public class Vehicle {
     }
 
     public Integer getTotalPreviousTimeParked() {
+        // in minutes
         return this.totalPreviousTimeParked;
+    }
+
+    public Integer getTotalNewTimeParked() {
+        // in minutes
+        Integer totalTimeParked = this.totalPreviousTimeParked;
+        LocalDateTime ltp = LocalDateTime.parse(this.lastTimeParked);
+        Date rn = new java.util.Date();
+        Integer diff = (int) ChronoUnit.MINUTES.between(ltp, (Temporal) rn);
+        totalTimeParked += diff;
+        return totalTimeParked;     
     }
 
     public Integer getRoomNumber() {

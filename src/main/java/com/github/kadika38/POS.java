@@ -210,12 +210,7 @@ public class POS {
                                             switch (vecOption) {
                                                 case "1":
                                                     // normal price
-                                                    Integer totalTimeParked = currentVehicle.getTotalPreviousTimeParked();
-                                                    LocalDateTime ltp = LocalDateTime.parse(currentVehicle.getLastTimeParked());
-                                                    Date rn = new java.util.Date();
-                                                    Integer diff = (int) ChronoUnit.MINUTES.between(ltp, (Temporal) rn);
-                                                    totalTimeParked += diff;
-                                                    int price = getPrice(totalTimeParked) - currentVehicle.getPaidAmount();
+                                                    int price = getPrice(currentVehicle.getTotalNewTimeParked()) - currentVehicle.getPaidAmount();
                                                     System.out.println("Price: " + price);
                                                     boolean confirmedNormalPricePaid = yesNoConfirmation("Confirm transaction when complete (Y/N)");
                                                     boolean confirmationRetry = !confirmedNormalPricePaid;
@@ -266,6 +261,9 @@ public class POS {
                                                     break;
                                                 case "2":
                                                     // custom price
+                                                    System.out.println("Vehicle was here for " + (currentVehicle.getTotalNewTimeParked() / (24 * 60)) + " days, " + ((currentVehicle.getTotalNewTimeParked() % (24 * 60)) / 60) + " hours, and " + (currentVehicle.getTotalNewTimeParked() % 60) + " minutes.");
+                                                    System.out.println("Enter custom price: ");
+                                                    
                                                 case "3":
                                                     // comp
                                                 case "E":
