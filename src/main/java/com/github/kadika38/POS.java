@@ -1,6 +1,11 @@
 package com.github.kadika38;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -11,6 +16,8 @@ public class POS {
     APICallMaker api;
     Employee user;
     Scanner scanner;
+    int dailyRate;
+    int hourlyRate;
 
     POS(ArrayList<Spot> spotList, String url) {
         this.spotList = spotList;
@@ -22,6 +29,8 @@ public class POS {
         this.user = null;
         this.scanner = new Scanner(System.in);
         this.spotList = null;
+        this.dailyRate = 0;
+        this.hourlyRate = 0;
     }
 
     public void setActiveUser(String eid, String pw) {
@@ -30,6 +39,23 @@ public class POS {
             System.out.println("Logged in as " + this.user.getName());
         } else {
             System.out.println("Incorrect Login information.  Access denied.");
+        }
+    }
+
+    public void setRates(int dailyRate, int hourlyRate) {
+        this.dailyRate = dailyRate;
+        this.hourlyRate = hourlyRate;
+    }
+
+    private Integer getPrice(Integer timeParked) {
+        // calculates the price given the amount of time the vehicle was parked
+        // assumes timeParked is in minutes
+        int days = timeParked / (24 * 60);
+        int hours = timeParked % (24 * 60);
+        if (hours * this.hourlyRate < this.dailyRate) {
+            return (days * this.dailyRate) + (hours * this.hourlyRate);
+        } else {
+            return ((days + 1) * this.dailyRate);
         }
     }
 
@@ -184,7 +210,60 @@ public class POS {
                                             switch (vecOption) {
                                                 case "1":
                                                     // normal price
-                                                    
+                                                    Integer totalTimeParked = currentVehicle.getTotalPreviousTimeParked();
+                                                    LocalDateTime ltp = LocalDateTime.parse(currentVehicle.getLastTimeParked());
+                                                    Date rn = new java.util.Date();
+                                                    Integer diff = (int) ChronoUnit.MINUTES.between(ltp, (Temporal) rn);
+                                                    totalTimeParked += diff;
+                                                    int price = getPrice(totalTimeParked) - currentVehicle.getPaidAmount();
+                                                    System.out.println("Price: " + price);
+                                                    boolean confirmedNormalPricePaid = yesNoConfirmation("Confirm transaction when complete (Y/N)");
+                                                    boolean confirmationRetry = !confirmedNormalPricePaid;
+                                                    int confirmationRetryFailCount = 0;
+                                                    while (confirmationRetry) {
+                                                        System.out.println("Transaction incomplete, enter E to exit, or Y to retry transaction confirmation.");
+                                                        String tiRes = scanner.nextLine();
+                                                        switch (tiRes) {
+                                                            case "E":
+                                                                confirmationRetry = true;
+                                                                break;
+                                                            case "Y":
+                                                                confirmedNormalPricePaid = yesNoConfirmation("Confirm transaction when complete (Y/N)");
+                                                                if (confirmedNormalPricePaid) {
+                                                                    confirmationRetry = true;
+                                                                }
+                                                                break;
+                                                            default:
+                                                                confirmationRetryFailCount++;
+                                                                if (confirmationRetryFailCount > 9) {
+                                                                    confirmationRetry = true;
+                                                                }                            
+                                                                break;                                    
+                                                        }
+                                                    }
+                                                    if (!confirmedNormalPricePaid) {
+                                                        vec = false;
+                                                        ve = false;
+                                                        break;
+                                                    }
+                                                    Log normalPricePaidLog = new Log(user.getEid(), vid, "Vehicle Charged Normal Price: " + price + " and closed");
+                                                    api.sendLogToDB(normalPricePaidLog);
+                                                    // create vehicle update json
+                                                    String closedPaidNormalPriceJson = "{\"id\": \"" + vid + "\", \"status\": \"closed\", \"paidAmount\": \"" + (price + currentVehicle.getPaidAmount()) + "\"}";
+                                                    api.updateVehicleClosed(closedPaidNormalPriceJson);
+                                                    System.out.println("Transaction confirm.  Vehicle closed.");
+                                                    // check if vehicle is blocked
+                                                    for (Spot spot : spotList) {
+                                                        if (spot.getName() == currentVehicle.getLocation()) {
+                                                            for (Spot blocker : spot.getBlockedBy()) {
+                                                                System.out.println("Blocked by vehicle " + this.garage.get(blocker).getVid() + " in spot " + blocker.getName());
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                    vec = false;
+                                                    ve = false;
+                                                    break;
                                                 case "2":
                                                     // custom price
                                                 case "3":
@@ -247,5 +326,34 @@ public class POS {
                 }
             }
         }
+    }
+
+    private boolean yesNoConfirmation(String words) {
+        System.out.println(words);
+        boolean res = false;
+        boolean hasntAnswered = true;
+        int failCount = 0;
+        while (hasntAnswered) {
+            String inp = scanner.nextLine();
+            switch (inp) {
+                case "Y":
+                    res = true;
+                    hasntAnswered = false;
+                    break;
+                case "N":
+                    hasntAnswered = false;
+                    break;
+                case "E":
+                    hasntAnswered = false;
+                    break;
+                default:
+                    failCount++;
+                    if (failCount > 9) {
+                        hasntAnswered = false;
+                    }
+                    break;
+            }
+        }
+        return res;
     }
 }

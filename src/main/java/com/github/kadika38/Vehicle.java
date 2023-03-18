@@ -135,6 +135,10 @@ public class Vehicle {
 
     // Getter Methods
 
+    public String getVid() {
+        return this.vid;
+    }
+
     public String getStatus() {
         return this.status;
     }
