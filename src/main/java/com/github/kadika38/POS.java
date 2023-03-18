@@ -176,14 +176,50 @@ public class POS {
                                 switch (veOption) {
                                     case "1":
                                         // close
+                                        System.out.println("Pricing:\n1) Normal\n2) Custom\n3) Comp");
+                                        int vecFailCount = 0;
+                                        boolean vec = true;
+                                        while (vec) {
+                                            String vecOption = scanner.nextLine();
+                                            switch (vecOption) {
+                                                case "1":
+                                                    // normal price
+                                                    
+                                                case "2":
+                                                    // custom price
+                                                case "3":
+                                                    // comp
+                                                case "E":
+                                                    // exit
+                                                    System.out.println("Exiting.");
+                                                    vec = false;
+                                                    break;
+                                                default:
+                                                    System.out.println("Invalid option " + vecOption);
+                                                    vecFailCount++;
+                                                    if (vecFailCount > 9) {
+                                                        vec = false;
+                                                        System.out.println("Too many invalid inputs.  Closing menu");
+                                                    }
+                                                    break;
+                                            }
+                                        }
                                         break;
                                     case "2":
                                         // will return
                                         break;
                                     case "E":
                                         // exit
+                                        System.out.println("Exiting.");
+                                        ve = false;
                                         break;
                                     default:
+                                        System.out.println("Invalid option " + veOption);
+                                        veFailCount++;
+                                        if (veFailCount > 9) {
+                                            ve = false;
+                                            System.out.println("Too many invalid inputs.  Closing menu");
+                                        }
                                         break;
                                 }
                             }

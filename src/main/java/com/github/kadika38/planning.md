@@ -9,6 +9,7 @@ Notes for later
 - consider pros/cons of consolodating license plates and their states as a single license plate object, in Vehicle object
 - later on, implement limited garage access for non valet employees
 - cashier reports
+- find a way to make adjusting prices possible without changing the code base - make it a feature
 - might want to validate dates in the Vehicle setLastTimeParked setter method
 - add more validation to passwords for employees
 - consider modifying the Log class setup to be a parent class with two children so that timestamp generation doesn't have to be rewritten for both types
@@ -66,7 +67,7 @@ Set Active User(Employee ID eid, String pw)
                                 c. Comp
                                 - switch (option chosen)
                                     Option a:
-                                        - calculate price based on vehicle.lastTimeParked, vehicle.paidAmount, vehicle.transient, and vehicle.totalPreviousTimeParked
+                                        - calculate price based on vehicle.lastTimeParked, vehicle.paidAmount, and vehicle.totalPreviousTimeParked
                                         - confirm transaction
                                         - create new log(eid, vid, "Vehicle Charged Normal Price: ~price~ and closed")
                                         -> (call) (API Call Maker) Send Log to DB

@@ -17,7 +17,6 @@ public class Vehicle {
     String guestLastName;
     String lastTimeParked;
     Integer totalPreviousTimeParked;
-    Boolean transientOnly;
     Integer roomNumber;
     Integer paidAmount;
 
@@ -37,7 +36,6 @@ public class Vehicle {
         this.guestLastName = null;
         this.lastTimeParked = null;
         this.totalPreviousTimeParked = null;
-        this.transientOnly = null;
         this.roomNumber = null;
         this.paidAmount = null;
     }
@@ -59,7 +57,6 @@ public class Vehicle {
             this.guestLastName = responseNode.get("guestLastName").asText();
             this.lastTimeParked = responseNode.get("lastTimeParked").asText();
             this.totalPreviousTimeParked = responseNode.get("totalPreviousTimeParked").asInt();
-            this.transientOnly = responseNode.get("transientOnly").asBoolean();
             this.roomNumber = responseNode.get("roomNumber").asInt();
             this.paidAmount = responseNode.get("paidAmount").asInt();
 
@@ -126,11 +123,6 @@ public class Vehicle {
         return num;
     }
 
-    public boolean setTransientOnly(boolean b) {
-        this.transientOnly = b;
-        return b;
-    }
-
     public Integer setRoomNumber(Integer num) {
         this.roomNumber = num;
         return num;
@@ -183,10 +175,6 @@ public class Vehicle {
         return this.totalPreviousTimeParked;
     }
 
-    public Boolean getTransientOnly() {
-        return this.transientOnly;
-    }
-
     public Integer getRoomNumber() {
         return this.roomNumber;
     }
@@ -229,9 +217,6 @@ public class Vehicle {
         }
         if (this.totalPreviousTimeParked != null) {
             s += ", \"total previous time parked\": \"" + this.totalPreviousTimeParked + "\"";
-        }
-        if (this.transientOnly != null) {
-            s += ", \"transient only\": \"" + this.transientOnly + "\"";
         }
         if (this.roomNumber != null) {
             s += ", \"room number\": \"" + this.roomNumber + "\"";
