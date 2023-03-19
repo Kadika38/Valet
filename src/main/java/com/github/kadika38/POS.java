@@ -263,7 +263,39 @@ public class POS {
                                                     // custom price
                                                     System.out.println("Vehicle was here for " + (currentVehicle.getTotalNewTimeParked() / (24 * 60)) + " days, " + ((currentVehicle.getTotalNewTimeParked() % (24 * 60)) / 60) + " hours, and " + (currentVehicle.getTotalNewTimeParked() % 60) + " minutes.");
                                                     System.out.println("Enter custom price: ");
-                                                    
+                                                    Integer customPrice = -1;
+                                                    int cpFailCount = 0;
+                                                    boolean cp = true;
+                                                    while (cp) {
+                                                        String customePriceRes = scanner.nextLine();
+                                                        try {
+                                                            customPrice = Integer.parseInt(customePriceRes);
+                                                        } catch (NumberFormatException e) {
+                                                            cpFailCount++;
+                                                            if (cpFailCount > 9) {
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (customPrice != -1) {
+                                                            cp = !yesNoConfirmation("Confirm price: " + customPrice + "? (Y/N)");
+                                                        }
+                                                    }
+                                                    // if cp is still true, custom price was never set, exit this menu
+                                                    if (cp) {
+                                                        vec = false;
+                                                        break;
+                                                    }
+                                                    // otherwise the custom price was set and confirmed
+                                                    System.out.println("Custom price set: " + customPrice);
+                                                    if (yesNoConfirmation("Confirm transaction completed? (Y/N)")) {
+                                                        System.out.println("Transaction confirmed.");
+                                                        vec = false;
+                                                        break;
+                                                    } else {
+                                                        System.out.println("Transaction cancelled.  Exiting.");
+                                                        vec = false;
+                                                        break;
+                                                    }
                                                 case "3":
                                                     // comp
                                                 case "E":
