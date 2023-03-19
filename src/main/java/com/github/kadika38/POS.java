@@ -244,7 +244,7 @@ public class POS {
                                                     Log normalPricePaidLog = new Log(user.getEid(), vid, "Vehicle Charged Normal Price: " + price + " and closed");
                                                     api.sendLogToDB(normalPricePaidLog);
                                                     // create vehicle update json
-                                                    String closedPaidNormalPriceJson = "{\"id\": \"" + vid + "\", \"status\": \"closed\", \"paidAmount\": \"" + (price + currentVehicle.getPaidAmount()) + "\"}";
+                                                    String closedPaidNormalPriceJson = "{\"id\": \"" + vid + "\", \"status\": \"Closed\", \"paidAmount\": \"" + (price + currentVehicle.getPaidAmount()) + "\"}";
                                                     api.updateVehicleClosed(closedPaidNormalPriceJson);
                                                     System.out.println("Transaction confirm.  Vehicle closed.");
                                                     // check if vehicle is blocked
@@ -300,7 +300,7 @@ public class POS {
                                                         System.out.println("Transaction confirmed.");
                                                         Log cpLog = new Log(this.user.getEid(), vid, "Vehicle Charged Custom Price: " + customPrice + " and Closed.");
                                                         this.api.sendLogToDB(cpLog);
-                                                        String cpJson = "{\"vid\": \"" + vid + "\", \"status\": \"closed\", \"paidAmount\": \"" + (customPrice + currentVehicle.getPaidAmount()) + "\"}";
+                                                        String cpJson = "{\"vid\": \"" + vid + "\", \"status\": \"Closed\", \"paidAmount\": \"" + (customPrice + currentVehicle.getPaidAmount()) + "\"}";
                                                         this.api.updateVehicleClosed(cpJson);
                                                         vec = false;
                                                         break;
@@ -333,7 +333,7 @@ public class POS {
                                                     if (yesNoConfirmation("Comp and close ticket?  (Y/N)")) {
                                                         Log compLog = new Log(this.user.getEid(), vid, "Vehicle Comped: " + compReason + ", Closed");
                                                         this.api.sendLogToDB(compLog);
-                                                        String compJson = "{\"vid\": \"" + vid + "\", \"status\": \"closed\"}";
+                                                        String compJson = "{\"vid\": \"" + vid + "\", \"status\": \"Closed\"}";
                                                         this.api.updateVehicleClosed(compJson);
                                                         System.out.println("Comped and closed.");
                                                     } else {
@@ -359,6 +359,52 @@ public class POS {
                                         break;
                                     case "2":
                                         // will return
+                                        // confirm that vehicle license plate and room number are saved
+                                        if (currentVehicle.getLicensePlate() != null && currentVehicle.getRoomNumber() != null) {
+                                            if (yesNoConfirmation("Confirm vehicle exiting (Y/N)")) {
+                                                Log log = new Log(this.user.getEid(), vid, "Vehicle Exit");
+                                                this.api.sendLogToDB(log);
+                                                String simpleExit = "{\"vid\": \"" + vid + "\", \"status\": \"Requested\"}";
+                                                this.api.updateVehicleStatus(simpleExit);
+                                                System.out.println("Vehicle requested.");
+                                            } else {
+                                                ve = false;
+                                                break;
+                                            }
+                                        } else {
+                                            if (currentVehicle.getLicensePlate() == null) {
+                                                System.out.println("Enter license plate:");
+                                                String lp = scanner.nextLine();
+                                                currentVehicle.setLicensePlate(lp);
+                                                if (currentVehicle.getLicensePlate() == null) {
+                                                    System.out.println("Invalid license plate, exiting.");
+                                                    ve = false;
+                                                    break;
+                                                }
+                                            }
+                                            if (currentVehicle.getRoomNumber() == null) {
+                                                System.out.println("Enter room number:");
+                                                String rmString = scanner.nextLine();
+                                                Integer rm = null;
+                                                try {
+                                                    rm = Integer.parseInt(rmString);
+                                                } catch (NumberFormatException e) {
+                                                    System.out.println("Room number invalid, exiting.");
+                                                    ve = false;
+                                                    break;
+                                                }
+                                                currentVehicle.setRoomNumber(rm);
+                                            }
+                                            Log updateLog = new Log(this.user.getEid(), vid, "Vehicle Update: License Plate and Room Number");
+                                            this.api.sendLogToDB(updateLog);
+                                            Log exitJson = new Log(this.user.getEid(), vid, "Vehicle Exiting");
+                                            this.api.sendLogToDB(updateLog);
+                                            String updateExit = "{\"vid\": \"" + vid + "\", \"status\": \"Requested\", \"licensePlate\": \"" + currentVehicle.getLicensePlate() + "\", \"roomNumber\": \"" + currentVehicle.getRoomNumber() + "\"}";
+                                            this.api.updateVehicleExiting(updateExit);
+                                            System.out.println("Changes saved, vehicle requested.");
+                                            ve = false;
+                                            break;                                            
+                                        } 
                                         break;
                                     case "E":
                                         // exit
