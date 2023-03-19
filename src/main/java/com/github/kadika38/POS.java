@@ -331,7 +331,15 @@ public class POS {
                                                         }
                                                     }
                                                     if (yesNoConfirmation("Comp and close ticket?  (Y/N)")) {
-                                                        
+                                                        Log compLog = new Log(this.user.getEid(), vid, "Vehicle Comped: " + compReason + ", Closed");
+                                                        this.api.sendLogToDB(compLog);
+                                                        String compJson = "{\"vid\": \"" + vid + "\", \"status\": \"closed\"}";
+                                                        this.api.updateVehicleClosed(compJson);
+                                                        System.out.println("Comped and closed.");
+                                                    } else {
+                                                        System.out.println("Cancelled and exiting.");
+                                                        vec = false;
+                                                        break;
                                                     }
                                                 case "E":
                                                     // exit
