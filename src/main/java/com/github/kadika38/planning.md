@@ -2,7 +2,7 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
-- currently working on POS / vehicle ops / vehicle exit / close / custom price
+- 
 
 Notes for later
 - find a way to validate make and color in Vehicle setter functions

@@ -261,7 +261,16 @@ public class POS {
                                                     break;
                                                 case "2":
                                                     // custom price
+                                                    System.out.println("Please provide password: ");
+                                                    String cpPw = scanner.nextLine();
+                                                    if (!api.employeeLogIn(this.user.getEid(), cpPw) && this.user.getSystemAccess() < 2) {
+                                                        System.out.println("Access denied.");
+                                                        vec = false;
+                                                        break;
+                                                    }
+                                                    System.out.println("Access granted.");
                                                     System.out.println("Vehicle was here for " + (currentVehicle.getTotalNewTimeParked() / (24 * 60)) + " days, " + ((currentVehicle.getTotalNewTimeParked() % (24 * 60)) / 60) + " hours, and " + (currentVehicle.getTotalNewTimeParked() % 60) + " minutes.");
+                                                    System.out.println("Already paid: " + currentVehicle.getPaidAmount());
                                                     System.out.println("Enter custom price: ");
                                                     Integer customPrice = -1;
                                                     int cpFailCount = 0;
@@ -289,6 +298,10 @@ public class POS {
                                                     System.out.println("Custom price set: " + customPrice);
                                                     if (yesNoConfirmation("Confirm transaction completed? (Y/N)")) {
                                                         System.out.println("Transaction confirmed.");
+                                                        Log cpLog = new Log(this.user.getEid(), vid, "Vehicle Charged Custom Price: " + customPrice + " and Closed.");
+                                                        this.api.sendLogToDB(cpLog);
+                                                        String cpJson = "{\"vid\": \"" + vid + "\", \"status\": \"closed\", \"paidAmount\": \"" + (customPrice + currentVehicle.getPaidAmount()) + "\"}";
+                                                        this.api.updateVehicleClosed(cpJson);
                                                         vec = false;
                                                         break;
                                                     } else {
@@ -298,6 +311,28 @@ public class POS {
                                                     }
                                                 case "3":
                                                     // comp
+                                                    System.out.println("Please provide password: ");
+                                                    String cpPw = scanner.nextLine();
+                                                    if (!api.employeeLogIn(this.user.getEid(), cpPw) && this.user.getSystemAccess() < 2) {
+                                                        System.out.println("Access denied.");
+                                                        vec = false;
+                                                        break;
+                                                    }
+                                                    System.out.println("Access granted.");
+                                                    System.out.println("Please give reason for comping: ");
+                                                    boolean compNotExplained = true;
+                                                    String compReason;
+                                                    while (compNotExplained) {
+                                                        compReason = scanner.nextLine();
+                                                        if (yesNoConfirmation("Confirm reason: " + compReason + " (Y/N)")) {
+                                                            compNotExplained = false;
+                                                        } else {
+                                                            System.out.println("Please give reason for comping: ");
+                                                        }
+                                                    }
+                                                    if (yesNoConfirmation("Comp and close ticket?  (Y/N)")) {
+                                                        
+                                                    }
                                                 case "E":
                                                     // exit
                                                     System.out.println("Exiting.");
