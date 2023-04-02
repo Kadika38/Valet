@@ -2,10 +2,9 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
--   
+-   currently reworking the pos system, last part worked on is marked
 
 Notes for later
-- create a better setup for the menus within POS
 - find a way to validate make and color in Vehicle setter functions
 - consider pros/cons of consolodating license plates and their states as a single license plate object, in Vehicle object
 - later on, implement limited garage access for non valet employees
