@@ -16,6 +16,19 @@ public class POSrework {
 
     // Menu1 / Vehicle Operations / Update Vehicle Info (Action)
     Action updateVehicleInfoOpen = new Action(() -> performOnUpdateVehicleInfoOpen());
+    // vehicle update menu used in the above action
+    LinkedHashMap<String, MenuObject> vuOptions = new LinkedHashMap<String, MenuObject>();
+    vuOptions.put("Status", vuStatusAction);
+    vuOptions.put("License Plate", vuLPAction);
+    vuOptions.put("License Plate State", vuLPSAction);
+    vuOptions.put("Make", vuMakeAction);
+    vuOptions.put("Color", vuColorAction);
+    vuOptions.put("Location", vuLocation);
+    vuOptions.put("Guest First Name", vuGFNAction);
+    vuOptions.put("Guest Last Name", vuGLNAction);
+    vuOptions.put("Room Number", vuRoomNumAction);
+    vuOptions.put("Apply Changes", vuApplyChangesAction);
+    Menu vuMenu = new Menu("Update what vehicle info?", vuOptions);
 
     // Menu1 / Vehicle Operations / Vehicle Exit / Close / Normal Price (Action)
     Action closeNormalPrice = new Action(() -> performOnCloseNormalPrice());
@@ -105,6 +118,10 @@ public class POSrework {
 
         this.vehicle = api.retrieveVehicleFromDB(enteredVid);
         nextMenu.open();
+    }
+
+    private void performOnUpdateVehicleInfoOpen() {
+        
     }
 
     // verifys user credentials before opening the employee operations menu
