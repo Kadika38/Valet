@@ -7,6 +7,7 @@ public class POSrework {
     Vehicle vehicle;
     Scanner scanner;
     APICallMaker api;
+    Employee user;
 
 
     // create the menu using my MenuObject menu system
@@ -84,6 +85,7 @@ public class POSrework {
         this.vehicle = null;
         this.scanner = new Scanner(System.in);
         this.api = new APICallMaker(url);
+        this.user = null;
     }
 
     // Functions used in menu Actions
@@ -106,6 +108,30 @@ public class POSrework {
     }
 
     private void performOnEmployeeOpsOpen(Menu nextMenu) {
+        boolean succesfulLogIn = false;
 
+        while (!succesfulLogIn) {
+            System.out.println("Please log in or input 'E' to exit.  Enter Employee ID:");
+            String enteredEid = scanner.nextLine();
+            System.out.println("Enter password:");
+            String enteredPw = scanner.nextLine();
+
+            if ("E".equals(enteredEid) | "E".equals(enteredPw)) {
+                System.out.println("Exiting.");
+                return;
+            }
+
+            if (Employee.isValidEmployeeID(enteredEid)) {
+                if (api.employeeLogIn(enteredEid, enteredPw)) {
+                    succesfulLogIn = true;
+                } else {
+                    System.out.println("Incorrect password.");
+                }
+            } else {
+                System.out.println("Invalid Employee ID.");
+            }
+        }
+
+        nextMenu.open();
     }
 }
