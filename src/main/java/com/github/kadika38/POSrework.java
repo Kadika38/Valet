@@ -107,6 +107,7 @@ public class POSrework {
         nextMenu.open();
     }
 
+    // verifys user credentials before opening the employee operations menu
     private void performOnEmployeeOpsOpen(Menu nextMenu) {
         boolean succesfulLogIn = false;
 
@@ -123,7 +124,12 @@ public class POSrework {
 
             if (Employee.isValidEmployeeID(enteredEid)) {
                 if (api.employeeLogIn(enteredEid, enteredPw)) {
-                    succesfulLogIn = true;
+                    if (api.getEmployeeSystemAccess(enteredEid) > 2) {
+                        succesfulLogIn = true;
+                    } else {
+                        System.out.println("System access level not high enough.  Exiting.");
+                        return;
+                    }
                 } else {
                     System.out.println("Incorrect password.");
                 }
