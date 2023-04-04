@@ -14,16 +14,24 @@ public class POSrework {
     // this requires creating each menu's options before the menu itself
     // start from the bottom @ "Menu1" and follow upwards
 
-    // Menu1 / Vehicle Operations / Update Vehicle Info (Action)
-    Action updateVehicleInfoOpen = new Action(() -> performOnUpdateVehicleInfoOpen());
-    // vehicle update menu used in the above action
+    // Menu1 / Vehicle Operations / Update Vehicle Info -> update vehicle options actions
+    Action vuLPAction = new Action(() -> vuLPUpdate());
+    Action vuLPSAction = new Action(() -> vuLPSUpdate());
+    Action vuMakeAction = new Action(() -> vuMakeUpdate());
+    Action vuColorAction = new Action(() -> vuColorUpdate());
+    Action vuLocationAction = new Action(() -> vuLocationUpdate());
+    Action vuGFNAction = new Action(() -> vuGFNUpdate());
+    Action vuGLNAction = new Action(() -> vuGLNUpdate());
+    Action vuRoomNumAction = new Action(() -> vuRoomNumUpdate());
+    Action vuFinishAction = new Action(() -> vuFinish());
+
+    // Menu1 / Vehicle Operations / Update Vehicle Info (Menu)
     LinkedHashMap<String, MenuObject> vuOptions = new LinkedHashMap<String, MenuObject>();
-    vuOptions.put("Status", vuStatusAction);
     vuOptions.put("License Plate", vuLPAction);
     vuOptions.put("License Plate State", vuLPSAction);
     vuOptions.put("Make", vuMakeAction);
     vuOptions.put("Color", vuColorAction);
-    vuOptions.put("Location", vuLocation);
+    vuOptions.put("Location", vuLocationAction);
     vuOptions.put("Guest First Name", vuGFNAction);
     vuOptions.put("Guest Last Name", vuGLNAction);
     vuOptions.put("Room Number", vuRoomNumAction);
@@ -63,7 +71,7 @@ public class POSrework {
 
     // Menu1 / Vehicle Operations (Menu)
     LinkedHashMap<String, MenuObject> vehicleOpsMenuMap = new LinkedHashMap<String, MenuObject>();
-    vehicleOpsMenuMap.put("Update Vehicle Information", updateVehicleInfoOpen);
+    vehicleOpsMenuMap.put("Update Vehicle Information", vuMenu);
     vehicleOpsMenuMap.put("Vehicle Exit", vehicleExitMenu);
     vehicleOpsMenuMap.put("Prepay", prepayOpen);
     vehicleOpsMenuMap.put("View Vehicle Logs", viewVehicleLogsOpen);
@@ -120,8 +128,32 @@ public class POSrework {
         nextMenu.open();
     }
 
-    private void performOnUpdateVehicleInfoOpen() {
-        
+    private void vuLPUpdate() {
+        System.out.println("Enter License Plate");
+        String enteredLP = scanner.nextLine();
+        System.out.println("New License Plate: " + enteredLP + ".  Apply change? 'Y' to confirm, any other input to cancel.");
+        String lpconfirmed = scanner.nextLine();
+        if ("Y".equals(lpconfirmed)) {
+            this.vehicle.setLicensePlate(enteredLP);
+            System.out.println("Change saved unless input did not meet License Plate requirements.");
+        } else {
+            System.out.println("Canceled.");
+        }
+        vuMenu.open();
+    }
+
+    private void vuLPSUpdate() {
+        System.out.println("Enter License Plate State (2 Characters):");
+        String enteredLPS = scanner.nextLine();
+        System.out.println("New License Plate State: " + enteredLPS + ".  Apply change?  'Y' to confirm, any other input to cancel.");
+        String lpsconfirmed = scanner.nextLine();
+        if ("Y".equals(lpsconfirmed)) {
+            this.vehicle.setLicensePlateState(enteredLPS);
+            System.out.println("Change saved unless input did not meet License Plate State requirements.");
+        } else {
+            System.out.println("Canceled.");
+        }
+        vuMenu.open();
     }
 
     // verifys user credentials before opening the employee operations menu
