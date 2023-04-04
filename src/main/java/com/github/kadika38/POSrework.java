@@ -1,9 +1,14 @@
 package com.github.kadika38;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class POSrework {
+    Map<Spot, Vehicle> garage;
+    ArrayList<Spot> spotList;
     Vehicle vehicle;
     Scanner scanner;
     APICallMaker api;
@@ -102,7 +107,12 @@ public class POSrework {
     Menu menu1 = new Menu("Welcome to the Valet System.  Input 'E' to exit any menu.", menu1map);
 
     
-    POSrework(String url) {
+    POSrework(ArrayList<Spot> spotList, String url) {
+        this.spotList = spotList;
+        this.garage = new HashMap<Spot, Vehicle>();
+        for (Spot spot : spotList) {
+            garage.put(spot, null);
+        }
         this.vehicle = null;
         this.scanner = new Scanner(System.in);
         this.api = new APICallMaker(url);
@@ -191,7 +201,12 @@ public class POSrework {
         String locationconfirmed = scanner.nextLine();
         if ("Y".equals(locationconfirmed)) {
             this.vehicle.setLocation(enteredLocation);
-            System.out.println("Change saved.");
+            for (Spot spot : this.spotList) {
+                if (enteredLocation.equals(spot.getName())) {
+                    
+                }
+            }
+            System.out.println("Change saved unless spot did not exist in garage.");
         } else {
             System.out.println("Canceled.");
         }
@@ -248,7 +263,6 @@ public class POSrework {
         api.sendVehicleToDB(this.vehicle);
         Log log = new Log(this.user.getEid(), this.vehicle.getVid(), "Vehicle Info Updated.");
         api.sendLogToDB(log);
-        
     }
 
     // verifys user credentials before opening the employee operations menu
