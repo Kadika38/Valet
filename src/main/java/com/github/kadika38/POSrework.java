@@ -156,6 +156,101 @@ public class POSrework {
         vuMenu.open();
     }
 
+    private void vuMakeUpdate() {
+        System.out.println("Enter Make:");
+        String enteredMake = scanner.nextLine();
+        System.out.println("New Make: " + enteredMake + ".  Apply change?  'Y' to confirm, any other input to cancel.");
+        String makeconfirmed = scanner.nextLine();
+        if ("Y".equals(makeconfirmed)) {
+            this.vehicle.setMake(enteredMake);
+            System.out.println("Change saved.");
+        } else {
+            System.out.println("Canceled.");
+        }
+        vuMenu.open();
+    }
+
+    private void vuColorUpdate() {
+        System.out.println("Enter Color:");
+        String enteredColor = scanner.nextLine();
+        System.out.println("New Color: " + enteredColor + ".  Apply change?  'Y' to confirm, any other input to cancel.");
+        String colorconfirmed = scanner.nextLine();
+        if ("Y".equals(colorconfirmed)) {
+            this.vehicle.setColor(enteredColor);
+            System.out.println("Change saved.");
+        } else {
+            System.out.println("Canceled.");
+        }
+        vuMenu.open();
+    }
+
+    private void vuLocationUpdate() {
+        System.out.println("Enter Location: ");
+        String enteredLocation = scanner.nextLine();
+        System.out.println("New Location: " + enteredLocation + ".  Apply change?  'Y' to confirm, any other input to cancel.");
+        String locationconfirmed = scanner.nextLine();
+        if ("Y".equals(locationconfirmed)) {
+            this.vehicle.setLocation(enteredLocation);
+            System.out.println("Change saved.");
+        } else {
+            System.out.println("Canceled.");
+        }
+        vuMenu.open();
+    }
+
+    private void vuGFNUpdate() {
+        System.out.println("Enter Guest First Name:");
+        String enteredGFN = scanner.nextLine();
+        System.out.println("New Guest First Name: " + enteredGFN + ".  'Y' to confirm, any other input to cancel.");
+        String gfnconfirmed = scanner.nextLine();
+        if ("Y".equals(gfnconfirmed)) {
+            this.vehicle.setGuestFirstName(enteredGFN);
+            System.out.println("Change saved.");
+        } else {
+            System.out.println("Canceled.");
+        }
+        vuMenu.open();
+    }
+
+    private void vuGLNUpdate() {
+        System.out.println("Enter Guest Last Name:");
+        String enteredGLN = scanner.nextLine();
+        System.out.println("New Guest Last Name: " + enteredGLN + ".  'Y' to confirm, any other input to cancel.");
+        String glncornfirmed = scanner.nextLine();
+        if ("Y".equals(glncornfirmed)) {
+            this.vehicle.setGuestLastName(enteredGLN);
+            System.out.println("Change saved.");
+        } else {
+            System.out.println("Canceled.");
+        }
+        vuMenu.open();
+    }
+
+    private void vuRoomNumUpdate() {
+        System.out.println("Enter Room Number:");
+        String enteredRoomNum = scanner.nextLine();
+        System.out.println("New Room Number: " + enteredRoomNum + ".  'Y' to confirm, any other input to cancel.");
+        String roomnumconfirmed = scanner.nextLine();
+        if ("Y".equals(roomnumconfirmed)) {
+            this.vehicle.setRoomNumber(Integer.parseInt(enteredRoomNum));
+            System.out.println("Change saved unless input did not include a valid room number.");
+        } else {
+            System.out.println("Canceled.");
+        }
+        vuMenu.open();
+    }
+
+    private void vuFinish() {
+        System.out.println("Finallizing changes...");
+        if ("Being Parked".equals(this.vehicle.getStatus())) {
+            this.vehicle.setStatus("In");
+        }
+        api.sendVehicleToDB(this.vehicle);
+        Log log = new Log(this.user.getEid(), this.vehicle.getVid(), "Vehicle Info Updated.");
+        api.sendLogToDB(log);
+        
+    }
+
     // verifys user credentials before opening the employee operations menu
     private void performOnEmployeeOpsOpen(Menu nextMenu) {
         boolean succesfulLogIn = false;

@@ -2,7 +2,7 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
--   currently reworking the pos system, last part worked on is marked
+-   currently reworking the pos system
 
 Notes for later
 - find a way to validate make and color in Vehicle setter functions
