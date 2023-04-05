@@ -1,6 +1,7 @@
 package com.github.kadika38;
 
 import java.security.KeyRep;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class POS2 {
@@ -627,5 +628,51 @@ public class POS2 {
                 }
             }
         }
+    }
+
+    private void prepayMenu() {
+        Vehicle v = getVehicleFromVIDInput();
+        if (v == null) {
+            return;
+        }
+        System.out.println("Prepaying.  Enter amount to prepay, or 'E' to exit:");
+        boolean keepRunning = true;
+        Integer prepay;
+        while (keepRunning) {
+            String prepayString = scanner.nextLine();
+            if ("E".equals(prepayString)) {
+                System.out.println("Exiting.");
+                return;
+            } else {
+                try {
+                    prepay = Integer.parseInt(prepayString);
+                    keepRunning = false;
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input.");
+                }
+            }
+        }
+        if (confirmCollectionOfMoney(prepay)) {
+            v.setPaidAmount(v.getPaidAmount() + prepay);
+            this.api.sendVehicleToDB(v);
+            Log log = new Log(this.user.getEid(), v.getVid(), "Prepaid: $" + prepay);
+            this.api.sendLogToDB(log);
+            System.out.println("Transaction complete.");
+        }
+    }
+
+    private void viewVehicleLogsMenu() {
+        Vehicle v = getVehicleFromVIDInput();
+        if (v == null) {
+            return;
+        }
+        ArrayList<Log> logs = this.api.retrieveVehicleLogs(v.getVid());
+        System.out.println("Vehicle logs:");
+        for (Log log : logs) {
+            log.print();
+        }
+        System.out.println("Input anything to return to Vehicle Operations Menu");
+        String finished = scanner.nextLine();
+        return;
     }
 }
