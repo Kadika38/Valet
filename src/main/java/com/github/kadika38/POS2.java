@@ -675,4 +675,128 @@ public class POS2 {
         String finished = scanner.nextLine();
         return;
     }
+
+    private void employeeOpsMenu() {
+        if (this.user.getSystemAccess() > 2) {
+            boolean keepRunning = true;
+            Integer choice = -1;
+            while (keepRunning) {
+                System.out.println("1) Add New Employee\n2) Edit Existing Employee\n3) Exit Menu");
+                choice = Integer.parseInt(scanner.nextLine());
+                switch (choice) {
+                    case 1:
+                        addNewEmployee();
+                        break;
+                    case 2:
+                        editExistingEmployee();
+                        break;
+                    case 3:
+                        keepRunning = false;
+                        System.out.println("Exiting Menu.");
+                        break;
+                    default:
+                        System.out.println("Invalid input.");
+                        break;
+                }
+            }
+        } else {
+            System.out.println("System access level too low.  Operation restricted.  Exiting.");
+            return;
+        }
+    }
+
+    private void addNewEmployee() {
+        boolean keepRunning = true;
+        String newEid;
+        String name;
+        Integer garageAccess;
+        Integer systemAccess;
+        Employee newEmployee;
+        System.out.println("At any time, input 'E' to exit.");
+        System.out.println("Enter new Employee ID:");
+        while (keepRunning) {
+            newEid = scanner.nextLine();
+            if ("E".equals(newEid)) {
+                System.out.println("Exiting.");
+                return;
+            } else if (Employee.isValidEmployeeID(newEid)) {
+                newEmployee = new Employee(newEid);
+                keepRunning = false;
+            } else {
+                System.out.println("Invalid Emploee ID.");
+            }
+        }
+        keepRunning = true;
+        System.out.println("Enter new Employee's name:");
+        while (keepRunning) {
+            name = scanner.nextLine();
+            if ("E".equals(name)) {
+                System.out.println("Exiting.");
+                return;
+            } else if (name.length() > 0) {
+                newEmployee.setName(name);
+                keepRunning = false;
+            } else {
+                System.out.println("Invalid input");
+            }
+        }
+        keepRunning = true;
+        System.out.println("Input Garage Access Level:\n0) No Access\n1) Basic Valet Access\n2) Master Access");
+        while (keepRunning) {
+            String ga = scanner.nextLine();
+            if ("E".equals(ga)) {
+                System.out.println("Exiting.");
+                return;
+            }
+            try {
+                garageAccess = Integer.parseInt(ga);
+                newEmployee.setGarageAccess(garageAccess);
+                keepRunning = false;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
+            }
+        }
+        keepRunning = true;
+        System.out.println("Input System Access Level:\n0) No Access\n1) Basic Valet Access\n2) Captain Access\n3) Master Access");
+        while (keepRunning) {
+            String sa = scanner.nextLine();
+            if ("E".equals(sa)) {
+                System.out.println("Exiting.");
+                return;
+            }
+            try {
+                systemAccess = Integer.parseInt(sa);
+                newEmployee.setSystemAccess(systemAccess);
+                keepRunning = false;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
+            }
+        }
+        keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Input temporary password:");
+            String enteredPw = scanner.nextLine();
+            if ("E".equals(enteredPw)) {
+                System.out.println("Exiting.");
+                return;
+            } else if (enteredPw.length() > 0) {
+                System.out.println("Confirm temporary password:");
+                String confirmPw = scanner.nextLine();
+                if ("E".equals(confirmPw)) {
+                    System.out.println("Exiting.");
+                    return;
+                } else if (confirmPw.equals(enteredPw)) {
+                    newEmployee.setPassword(confirmPw);
+                    System.out.println("Confirmed.  Password saved.");
+                    keepRunning = false;
+                } else {
+                    System.out.println("Password did not match.");
+                }
+            }
+        }
+        this.api.sendEmployeeToDb(newEmployee);
+        Log log = new Log(this.user.getEid(), "Created New Employee: " + newEmployee.getEid());
+        this.api.sendLogToDB(log);
+        System.out.println("New Employee Creation Complete.");
+    }
 }
