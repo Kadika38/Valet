@@ -8,12 +8,22 @@ public class POS2 {
     Employee user;
     APICallMaker api;
     Scanner scanner;
+    Integer dailyRate;
+    Integer hourlyRate;
+
 
     POS2(Garage garage, String url) {
         this.garage = garage;
         this.api = new APICallMaker(url);
         this.user = null;
         this.scanner = new Scanner(System.in);
+        this.dailyRate = 0;
+        this.hourlyRate = 0;
+    }
+
+    public void setRates(int dailyRate, int hourlyRate) {
+        this.dailyRate = dailyRate;
+        this.hourlyRate = hourlyRate;
     }
 
     public void run() {
@@ -358,6 +368,78 @@ public class POS2 {
             } else {
                 System.out.println("Invalid input.");
             }
+        }
+    }
+
+    private void vehicleExitMenu() {
+        boolean keepRunning = true;
+        Integer choice = -1;
+        while (keepRunning) {
+            System.out.println("1) Close\n2) Will Return\n3) Exit Menu");
+            choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1:
+                    closeVehicleMenu();
+                    break;
+                case 2:
+                    willReturnMenu();
+                    break;
+                case 3:
+                    keepRunning = false;
+                    System.out.println("Exiting Menu.");
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+                    break;
+            }
+        }
+    }
+
+    private void closeVehicleMenu() {
+        boolean keepRunning = true;
+        Integer choice = -1;
+        while (keepRunning) {
+            System.out.println("1) Normal Price\n2) Custom Price\n3) Comp\n4) Exit Menu");
+            choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1:
+                    closeWithNormalPrice();
+                    break;
+                case 2:
+                    closeWithCustomPrice();
+                    break;
+                case 3:
+                    closeWithComp();
+                    break;
+                case 4:
+                    keepRunning = false;
+                    System.out.println("Exiting Menu.");
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+                    break;
+            }
+        }
+    }
+
+    private void closeWithNormalPrice() {
+        Vehicle v = getVehicleFromVIDInput();
+        if (v == null) {
+            return;
+        }
+        Integer hoursNotPaid = v.getHoursNotPaidFor();
+        Integer price = ((hoursNotPaid % 24) * this.hourlyRate) + (((hoursNotPaid - (hoursNotPaid % 24)) / 24) * this.dailyRate);
+        System.out.println("Customer owes " + price + " for " + hoursNotPaid " hours of unpaid parking.");
+        if (confirmCollectionOfMoney(price)) {
+            System.out.println("Transaction complete, closing vehicle.");
+            Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle Charged Normal Price and Closed - $" + price + " Collected");
+            this.api.sendLogToDB(log);
+            v.setStatus("Closed");
+            v.setPaidAmount(v.getPaidAmount() + price);
+            this.api.sendVehicleToDB(v);
+        } else {
+            System.out.println("Transaction incomplete, vehicle is still open.  Closing menu.");
+            return;
         }
     }
 }
