@@ -688,7 +688,7 @@ public class POS2 {
                         addNewEmployee();
                         break;
                     case 2:
-                        editExistingEmployee();
+                        editExistingEmployeeMenu();
                         break;
                     case 3:
                         keepRunning = false;
@@ -798,5 +798,63 @@ public class POS2 {
         Log log = new Log(this.user.getEid(), "Created New Employee: " + newEmployee.getEid());
         this.api.sendLogToDB(log);
         System.out.println("New Employee Creation Complete.");
+    }
+
+    private void editExistingEmployeeMenu() {
+        boolean keepRunning = true;
+        Integer choice = -1;
+        Employee e = null;
+        String eName;
+        while (keepRunning) {
+            if (e == null) {
+                eName = "NONE";
+            }
+            System.out.println("Current employee: " + eName);
+            System.out.println("1) Enter Employee ID of Current Employee\n2) Update Name\n3) Update Gargae Access\n4) Update System Access\n5) Update Password\n6) Save Changes\n7) Exit Menu");
+            choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1:
+                    Employee probablyE = getEmployeeFromEIDInput();
+                    if (probablyE != null) {
+                        e = probablyE;
+                        eName = e.getEid();
+                    }
+                    break;
+                case 2:
+                    String probablyName = getEmployeeNameInput();
+                    if (probablyName != null) {
+                        e.setName(probablyName);
+                    }
+                    break;
+                case 3:
+                    Integer probablyGA = getGarageAccessInput();
+                    if (probablyGA != null) {
+                        e.setGarageAccess(probablyGA);
+                    }
+                    break;
+                case 4:
+                    Integer probablySA = getSystemAccessInput();
+                    if (probablySA != null) {
+                        e.setSystemAccess(probablySA);
+                    }
+                    break;
+                case 5:
+                    String probablyPw = getPasswordInput();
+                    if (probablyPw != null) {
+                        e.setPassword(probablyPw);
+                    }
+                    break;
+                case 6:
+                    employeeUpdateFinalize(v);
+                    break;
+                case 7:
+                    keepRunning = false;
+                    System.out.println("Exiting Menu.");
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+                    break;
+            }
+        }
     }
 }
