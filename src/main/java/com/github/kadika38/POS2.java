@@ -989,6 +989,7 @@ public class POS2 {
                 }
             }
         }
+        return null;
     }
 
     private String getPasswordInput() {
