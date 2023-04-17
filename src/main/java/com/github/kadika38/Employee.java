@@ -108,6 +108,42 @@ public class Employee {
         return s;
     }
 
+    public void printInfo() {
+        System.out.println("Employee info:");
+        System.out.println("Employee ID: " +  this.eid);
+        System.out.println("Name: " + this.name);
+        switch (this.garageAccess) {
+            case 0:
+                System.out.println("Garage Access: No Access");
+                break;
+            case 1:
+                System.out.println("Garage Access: Basic Valet Access");
+                break;
+            case 2:
+                System.out.println("Garage Access: Master Access");
+                break;
+            default:
+                System.out.println("Garage Access: No Access");
+                break;
+        }
+        switch (this.systemAccess) {
+            case 0:
+                System.out.println("System Access: No Access");
+                break;
+            case 1:
+                System.out.println("System Access: Basic Valet Access");
+                break;
+            case 2:
+                System.out.println("System Access: Captain Access");
+                break;
+            case 3:
+                System.out.println("System Access: Master Access");
+                break;
+            default:
+                System.out.println("System Access: No Access");
+        }
+    }
+
 
     // Used in this class and available publicly for validating eid's
     // Employee ID's start with the letter E and are 8 characters long including the leading E
