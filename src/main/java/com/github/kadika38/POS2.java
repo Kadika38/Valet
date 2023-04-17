@@ -441,7 +441,9 @@ public class POS2 {
             v.setStatus("Closed");
             v.setPaidAmount(v.getPaidAmount() + price);
             this.api.sendVehicleToDB(v);
-            this.garage.vehicleExiting(v);
+            for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+            }
         } else {
             System.out.println("Transaction incomplete, vehicle is still open.  Closing menu.");
             return;
@@ -482,7 +484,9 @@ public class POS2 {
             v.setStatus("Closed");
             v.setPaidAmount(v.getPaidAmount() + price);
             this.api.sendVehicleToDB(v);
-            this.garage.vehicleExiting(v);
+            for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+            }
         } else {
             System.out.println("Transaction incomplete, vehicle still open.  Closing menu.");
             return;
@@ -517,7 +521,9 @@ public class POS2 {
                     this.api.sendLogToDB(log);
                     v.setStatus("Closed");
                     this.api.sendVehicleToDB(v);
-                    this.garage.vehicleExiting(v);
+                    for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                        System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+                    }
                 } else {
                     System.out.println("Invalid input.");
                 }
@@ -547,7 +553,9 @@ public class POS2 {
                     this.api.sendLogToDB(log);
                     v.setStatus("Requested");
                     this.api.sendVehicleToDB(v);
-                    this.garage.vehicleExiting();
+                    for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                        System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+                    }
                 } else {
                     System.out.println("Invalid input.");
                 }
@@ -621,7 +629,9 @@ public class POS2 {
                     this.api.sendLogToDB(velog);
                     v.setStatus("Requested");
                     this.api.sendVehicleToDB(v);
-                    this.garage.vehicleExiting();
+                    for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                        System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+                    }
                 } else {
                     System.out.println("Invalid input.");
                 }
