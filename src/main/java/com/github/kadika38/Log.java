@@ -62,4 +62,12 @@ public class Log {
 
         return s;
     }
+
+    public void print() {
+        if (this.vid == null) {
+            System.out.println("Employee " + this.eid + ", Info: " + this.log + " @" + this.timestamp);
+        } else {
+            System.out.println("Employee " + this.eid + ", Vehicle " + this.vid + ", Info: " + this.log + " @" + this.timestamp);
+        }
+    }
 }
