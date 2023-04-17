@@ -849,11 +849,8 @@ public class POS2 {
         boolean keepRunning = true;
         Integer choice = -1;
         Employee e = null;
-        String eName;
+        String eName = "NONE";
         while (keepRunning) {
-            if (e == null) {
-                eName = "NONE";
-            }
             System.out.println("Current employee: " + eName);
             System.out.println("1) Enter Employee ID of Current Employee\n2) Update Name\n3) Update Gargae Access\n4) Update System Access\n5) Update Password\n6) Save Changes\n7) Exit Menu");
             choice = Integer.parseInt(scanner.nextLine());
