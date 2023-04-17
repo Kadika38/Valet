@@ -469,7 +469,7 @@ public class POS2 {
         }
         Integer hoursNotPaid = getHoursNotPaidFor(v);
         Integer price = ((hoursNotPaid % 24) * this.hourlyRate) + (((hoursNotPaid - (hoursNotPaid % 24)) / 24) * this.dailyRate);
-        System.out.println("Customer owes " + price + " for " + hoursNotPaid " hours of unpaid parking.");
+        System.out.println("Customer owes " + price + " for " + hoursNotPaid + " hours of unpaid parking.");
         if (confirmCollectionOfMoney(price)) {
             System.out.println("Transaction complete, closing vehicle.");
             Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle Charged Normal Price and Closed - $" + price + " Collected");
