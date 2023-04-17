@@ -43,7 +43,7 @@ public class POS2 {
         boolean keepRunning = true;
         Integer choice = -1;
         while (keepRunning) {
-            System.out.println("1) Vehicle Operations\n2) Employee Operations\n3) Logout\n4) Exit Menu");
+            System.out.println("1) Vehicle Operations\n2) Employee Operations\n3) Logout");
             choice = Integer.parseInt(scanner.nextLine());
             switch (choice) {
                 case 1:
@@ -53,10 +53,7 @@ public class POS2 {
                     employeeOpsMenu();
                     break;
                 case 3:
-                    logout();
-                    keepRunning = false;
-                    break;
-                case 4:
+                    this.user = null;
                     keepRunning = false;
                     System.out.println("Exiting menu.");
                     break;
