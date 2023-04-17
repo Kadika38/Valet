@@ -39,4 +39,23 @@ public class Garage {
             }
         }
     }
+
+    public ArrayList<Vehicle> vehicleExiting(Vehicle v) {
+        String vid = v.getVid();
+        ArrayList<Vehicle> blockers = new ArrayList<Vehicle>();
+        for (Spot spot : this.spotList) {
+            if (this.garage.get(spot).getVid().equals(vid)) {
+                this.garage.put(spot, null);
+                if (spot.getBlockedBy().size() > 0) {
+                    for (Spot blocker : spot.getBlockedBy()) {
+                        if (this.garage.get(blocker) != null) {
+                            blockers.add(this.garage.get(blocker));
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        return blockers;
+    }
 }
