@@ -499,7 +499,7 @@ public class POS2 {
         System.out.println("Vehicle parked for total of " + timeParked + " hours and already paid $" + v.getPaidAmount());
         System.out.println("Input custom price, or 'E' to exit:");
         boolean keepRunning = true;
-        Integer price;
+        Integer price = 0;
         while (keepRunning) {
             String priceString = scanner.nextLine();
             if ("E".equals(priceString)) {
@@ -510,7 +510,7 @@ public class POS2 {
                 price = Integer.parseInt(priceString);
                 keepRunning = false;
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input.")
+                System.out.println("Invalid input.");
             }
         }
         if (confirmCollectionOfMoney(price)) {
