@@ -605,8 +605,8 @@ public class POS2 {
                     }
                 }
             }
-            Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle information updated.");
-            this.api.sendLogToDB(log);
+            Log viulog = new Log(this.user.getEid(), v.getVid(), "Vehicle information updated.");
+            this.api.sendLogToDB(viulog);
             System.out.println("Confirm vehicle exiting, 'Y' to confirm, 'E' to exit:");
             boolean keepRunning = true;
             while (keepRunning) {
@@ -617,8 +617,8 @@ public class POS2 {
                 } else if ("Y".equals(confirm)) {
                     keepRunning = false;
                     System.out.println("Confirmed.  Vehicle exiting.");
-                    Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle Exiting.");
-                    this.api.sendLogToDB(log);
+                    Log velog = new Log(this.user.getEid(), v.getVid(), "Vehicle Exiting.");
+                    this.api.sendLogToDB(velog);
                     v.setStatus("Requested");
                     this.api.sendVehicleToDB(v);
                     this.garage.vehicleExiting();
