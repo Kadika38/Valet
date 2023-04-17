@@ -756,7 +756,7 @@ public class POS2 {
         String name;
         Integer garageAccess;
         Integer systemAccess;
-        Employee newEmployee;
+        Employee newEmployee = null;
         System.out.println("At any time, input 'E' to exit.");
         System.out.println("Enter new Employee ID:");
         while (keepRunning) {
@@ -778,7 +778,7 @@ public class POS2 {
             if ("E".equals(name)) {
                 System.out.println("Exiting.");
                 return;
-            } else if (name.length() > 0) {
+            } else if (name.length() > 0 && newEmployee != null) {
                 newEmployee.setName(name);
                 keepRunning = false;
             } else {
