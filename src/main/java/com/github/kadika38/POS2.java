@@ -845,7 +845,7 @@ public class POS2 {
                     }
                     break;
                 case 6:
-                    employeeUpdateFinalize(v);
+                    employeeUpdateFinalize(e);
                     break;
                 case 7:
                     keepRunning = false;
@@ -877,4 +877,25 @@ public class POS2 {
             }
         }
     }
+
+    private String getEmployeeNameInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter employee name or input 'E' to exit:");
+            String enteredName = scanner.nextLine();
+            if ("E".equals(enteredName)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (enteredName.length() > 1) {
+                keepRunning = false;
+                System.out.println("Saving name: " + enteredName);
+                return null;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+    }
+
+    
 }
