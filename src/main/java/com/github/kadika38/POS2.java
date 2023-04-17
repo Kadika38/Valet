@@ -881,7 +881,7 @@ public class POS2 {
     private String getEmployeeNameInput() {
         boolean keepRunning = true;
         while (keepRunning) {
-            System.out.println("Enter employee name or input 'E' to exit:");
+            System.out.println("Enter updated employee name or input 'E' to exit:");
             String enteredName = scanner.nextLine();
             if ("E".equals(enteredName)) {
                 System.out.println("Exiting.");
@@ -942,6 +942,24 @@ public class POS2 {
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input.");
                 }
+            }
+        }
+    }
+
+    private String getPasswordInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter updated employee password or input 'E' to exit:");
+            String enteredPw = scanner.nextLine();
+            if ("E".equals(enteredPw)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (Employee.isValidPassword(enteredPw)) {
+                keepRunning = false;
+                return enteredPw;
+            } else {
+                System.out.println("Invalid input.");
             }
         }
     }
