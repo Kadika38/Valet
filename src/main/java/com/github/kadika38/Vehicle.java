@@ -251,6 +251,20 @@ public class Vehicle {
         return s;
     }
 
+    public void printInfo() {
+        System.out.println("Vehicle info:");
+        System.out.println("Vehicle ID: " + this.vid);
+        System.out.println("Make: " + this.make);
+        System.out.println("Color: " + this.color);
+        System.out.println("License Plate: " + this.licensePlate + " - " + this.licensePlateState);
+        System.out.println("Location: " + this.location);
+        System.out.println("Status: " + this.status);
+        System.out.println("Guest Name: " + this.guestFirstName + " " + this.guestLastName);
+        System.out.println("Guest's Room Number: " + this.roomNumber);
+        System.out.println("Paid Amount: " + this.paidAmount);
+        System.out.println("Total Time Parked: " + this.getTotalTimeParked() + " hours");
+    }
+
     // Used in this class and available publicly for validating vid's
     // Vehicle ID's start with the letter V and are 8 characters long including the leading V
     public static boolean isValidVehicleID(String s) {
