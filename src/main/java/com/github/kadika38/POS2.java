@@ -857,4 +857,24 @@ public class POS2 {
             }
         }
     }
+
+    private Employee getEmployeeFromEIDInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Employee ID or input 'E' to exit:");
+            String enteredEid = scanner.nextLine();
+            if ("E".equals(enteredEid)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (Employee.isValidEmployeeID(enteredEid)) {
+                // updating keepRunning isn't necessary here but it feels safer to have
+                keepRunning = false;
+                System.out.println("Retrieving employee data...");
+                return this.api.retrieveEmployeeFromDB(enteredEid);
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+    }
 }
