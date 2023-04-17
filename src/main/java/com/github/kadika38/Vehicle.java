@@ -185,7 +185,9 @@ public class Vehicle {
         return this.totalPreviousTimeParked;
     }
 
-    public Integer getTotalNewTimeParked() {
+
+
+    public Integer getTotalTimeParked() {
         // in minutes
         Integer totalTimeParked = this.totalPreviousTimeParked;
         LocalDateTime ltp = LocalDateTime.parse(this.lastTimeParked);

@@ -431,7 +431,7 @@ public class POS2 {
         if (v == null) {
             return;
         }
-        Integer hoursNotPaid = v.getHoursNotPaidFor();
+        Integer hoursNotPaid = getHoursNotPaidFor(v);
         Integer price = ((hoursNotPaid % 24) * this.hourlyRate) + (((hoursNotPaid - (hoursNotPaid % 24)) / 24) * this.dailyRate);
         System.out.println("Customer owes " + price + " for " + hoursNotPaid " hours of unpaid parking.");
         if (confirmCollectionOfMoney(price)) {
