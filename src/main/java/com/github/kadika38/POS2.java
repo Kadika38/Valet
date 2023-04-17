@@ -921,5 +921,28 @@ public class POS2 {
         }
     }
 
-    
+    private Integer getSystemAccessInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("System access level info:\n0 = no access\n1 = basic valet access\n2 = captain access\n3 = master access\nEnter this employee's system access level (0, 1, 2, or 3) or 'E' to exit:");
+            String enteredSA = scanner.nextLine();
+            if ("E".equals(enteredSA)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else {
+                try {
+                    Integer sa = Integer.parseInt(enteredSA);
+                    if (sa >= 0 && sa <= 3) {
+                        keepRunning = false;
+                        return sa;
+                    } else {
+                        System.out.println("Invalid input.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input.");
+                }
+            }
+        }
+    }
 }
