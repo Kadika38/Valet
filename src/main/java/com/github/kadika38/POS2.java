@@ -1005,4 +1005,22 @@ public class POS2 {
             }
         }
     }
+
+    private Integer getHoursNotPaidFor(Vehicle v) {
+        Integer moneyCollected = v.getPaidAmount();
+        Integer hoursPaid = 0;
+        while (moneyCollected > 0) {
+            if (moneyCollected > this.dailyRate) {
+                hoursPaid += 24;
+                moneyCollected = moneyCollected - this.dailyRate;
+            } else if (moneyCollected > this.hourlyRate) {
+                hoursPaid++;
+                moneyCollected = moneyCollected - this.hourlyRate;
+            } else if (moneyCollected > 0) {
+                hoursPaid += (moneyCollected / this.hourlyRate);
+                moneyCollected = 0;
+            }
+        }
+        return v.getTotalTimeParked() - hoursPaid;
+    }
 }
