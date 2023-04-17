@@ -963,6 +963,7 @@ public class POS2 {
                 }
             }
         }
+        return null;
     }
 
     private Integer getSystemAccessInput() {
