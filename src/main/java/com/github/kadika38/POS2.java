@@ -1052,6 +1052,7 @@ public class POS2 {
                 System.out.println("Invalid input.");
             }
         }
+        return false;
     }
 
     private Integer getHoursNotPaidFor(Vehicle v) {
