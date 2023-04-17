@@ -889,13 +889,12 @@ public class POS2 {
                 return null;
             } else if (enteredName.length() > 1) {
                 keepRunning = false;
-                System.out.println("Saving name: " + enteredName);
-                return null;
+                return enteredName;
             } else {
                 System.out.println("Invalid input.");
             }
         }
     }
 
-    
+
 }
