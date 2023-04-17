@@ -717,7 +717,7 @@ public class POS2 {
             log.print();
         }
         System.out.println("Input anything to return to Vehicle Operations Menu");
-        String finished = scanner.nextLine();
+        scanner.nextLine();
         return;
     }
 
