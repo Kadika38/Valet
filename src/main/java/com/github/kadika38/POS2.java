@@ -963,4 +963,28 @@ public class POS2 {
             }
         }
     }
+
+    private void employeeUpdateFinalize(Employee e) {
+        System.out.println("Employee info unsaved:");
+        e.printInfo();
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Confirm and save? 'Y' to confirm, 'E' to exit:");
+            String res = scanner.nextLine();
+            if ("Y".equals(res)) {
+                System.out.println("Saving changes...");
+                this.api.sendEmployeeToDb(e);
+                Log log = new Log(this.user.getEid(), "Employee information updated");
+                this.api.sendLogToDB(log);
+                System.out.println("Saved.");
+                keepRunning = false;
+            } else if ("E".equals(res)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+    }
 }
