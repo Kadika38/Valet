@@ -986,4 +986,23 @@ public class POS2 {
             }
         }
     }
+
+    private boolean confirmCollectionOfMoney(Integer money) {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Confirm $" + money + " Collected: (Y/N):");
+            String res = scanner.nextLine();
+            if ("Y".equals(res)) {
+                System.out.println("Confirmed.");
+                keepRunning = false;
+                return true;
+            } else if ("N".equals(res)) {
+                System.out.println("Cancelling operation.");
+                keepRunning = false;
+                return false;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+    }
 }
