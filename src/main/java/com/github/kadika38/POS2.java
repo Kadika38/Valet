@@ -682,7 +682,7 @@ public class POS2 {
         }
         System.out.println("Prepaying.  Enter amount to prepay, or 'E' to exit:");
         boolean keepRunning = true;
-        Integer prepay;
+        Integer prepay = 0;
         while (keepRunning) {
             String prepayString = scanner.nextLine();
             if ("E".equals(prepayString)) {
