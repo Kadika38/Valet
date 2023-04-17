@@ -29,12 +29,42 @@ public class POS2 {
 
     public void run() {
         this.user = login();
-        homeMenu();
+        if (this.user != null) {
+            homeMenu();
+        }
     }
 
     // Handles user login and returns that employee
     private Employee login() {
-        
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Employee ID or 'E' to exit:");
+            String enteredEid = scanner.nextLine();
+            if ("E".equals(enteredEid)) {
+                keepRunning = false;
+                System.out.println("Exiting");
+                return null;
+            }
+            System.out.println("Enter password or 'E' to exit:");
+            String enteredPw = scanner.nextLine();
+            if ("E".equals(enteredPw)) {
+                keepRunning = false;
+                System.out.println("Exiting");
+                return null;
+            }
+            if (Employee.isValidEmployeeID(enteredEid) && Employee.isValidPassword(enteredPw)) {
+                if (this.api.employeeLogIn(enteredEid, enteredPw)) {
+                    System.out.println("Log in successful!");
+                    keepRunning = false;
+                    return this.api.retrieveEmployeeFromDB(enteredEid);
+                } else {
+                    System.out.println("Login unsuccessful - Employee ID or Password incorrect");
+                }
+            } else {
+                System.out.println("Invalid Employee ID or password");
+            }
+        }
+        return null;
     }
 
     // This is the first menu that opens after login
