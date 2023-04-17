@@ -264,6 +264,7 @@ public class POS2 {
                 System.out.println("Invalid input.");
             }
         }
+        return null;
     }
 
     private String getVehicleColorInput() {
@@ -283,6 +284,7 @@ public class POS2 {
                 System.out.println("Invalid input.");
             }
         }
+        return null;
     }
 
     private String getVehicleLPInput() {
@@ -301,6 +303,7 @@ public class POS2 {
                 System.out.println("Invalid input.");
             }
         }
+        return null;
     }
 
     private String getVehicleLPSInput() {
@@ -319,6 +322,7 @@ public class POS2 {
                 System.out.println("Invalid input.");
             }
         }
+        return null;
     }
 
     private String getGFNInput() {
@@ -337,6 +341,7 @@ public class POS2 {
                 System.out.println("Invalid input.");
             }
         }
+        return null;
     }
 
     private String getGLNInput() {
@@ -355,6 +360,7 @@ public class POS2 {
                 System.out.println("Invalid input.");
             }
         }
+        return null;
     }
 
     private Integer getRMInput() {
@@ -377,6 +383,7 @@ public class POS2 {
                 }
             }
         }
+        return null;
     }
 
     private void vehicleUpdateFinalize(Vehicle v) {
