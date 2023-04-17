@@ -129,11 +129,8 @@ public class POS2 {
         boolean keepRunning = true;
         Integer choice = -1;
         Vehicle v = null;
-        String vName;
+        String vName = "NONE";
         while (keepRunning) {
-            if (v == null) {
-                vName = "NONE";
-            }
             System.out.println("Current vehicle: " + vName);
             System.out.println("1) Enter Vehicle ID of Current Vehicle\n2) Update Location\n3) Update Make\n4) Update Color\n5) Update License Plate\n6) Update License Plate Origin\n7) Update Guest First Name\n8) Update Guest Last Name\n9) Update Room Number\n10) Save Changes\n11) Exit Menu");
             choice = Integer.parseInt(scanner.nextLine());
