@@ -1008,6 +1008,7 @@ public class POS2 {
                 System.out.println("Invalid input.");
             }
         }
+        return null;
     }
 
     private void employeeUpdateFinalize(Employee e) {
