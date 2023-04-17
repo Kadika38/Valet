@@ -366,6 +366,8 @@ public class POS2 {
                 Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle information updated");
                 this.api.sendLogToDB(log);
                 this.garage.update(v);
+                System.out.println("Saved.");
+                keepRunning = false;
             } else if ("E".equals(res)) {
                 System.out.println("Exiting.");
                 keepRunning = false;
