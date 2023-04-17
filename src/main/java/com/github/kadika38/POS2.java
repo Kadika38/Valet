@@ -896,5 +896,30 @@ public class POS2 {
         }
     }
 
+    private Integer getGarageAccessInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Garage access level info:\n0 = no access\n1 = basic valet access\n2 = master access\nEnter this employee's garage access level (0, 1, or 2) or 'E' to exit:");
+            String enteredGA = scanner.nextLine();
+            if ("E".equals(enteredGA)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else {
+                try {
+                    Integer ga = Integer.parseInt(enteredGA);
+                    if (ga >= 0 && ga <= 2) {
+                        keepRunning = false;
+                        return ga;
+                    } else {
+                        System.out.println("Invalid input.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input.");
+                }
+            }
+        }
+    }
 
+    
 }
