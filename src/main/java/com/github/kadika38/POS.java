@@ -1,45 +1,24 @@
 package com.github.kadika38;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class POS {
-    Map<Spot, Vehicle> garage;
-    ArrayList<Spot> spotList;
-    APICallMaker api;
+    Garage garage;
     Employee user;
+    APICallMaker api;
     Scanner scanner;
-    int dailyRate;
-    int hourlyRate;
+    Integer dailyRate;
+    Integer hourlyRate;
 
-    POS(ArrayList<Spot> spotList, String url) {
-        this.spotList = spotList;
-        this.garage = new HashMap<Spot, Vehicle>();
-        for (Spot spot : spotList) {
-            garage.put(spot, null);
-        }
+
+    POS(Garage garage, String url) {
+        this.garage = garage;
         this.api = new APICallMaker(url);
         this.user = null;
         this.scanner = new Scanner(System.in);
-        this.spotList = null;
         this.dailyRate = 0;
         this.hourlyRate = 0;
-    }
-
-    public void setActiveUser(String eid, String pw) {
-        if (api.employeeLogIn(eid, pw)) {
-            this.user = api.retrieveEmployeeFromDB(eid);
-            System.out.println("Logged in as " + this.user.getName());
-        } else {
-            System.out.println("Incorrect Login information.  Access denied.");
-        }
     }
 
     public void setRates(int dailyRate, int hourlyRate) {
@@ -47,432 +26,1049 @@ public class POS {
         this.hourlyRate = hourlyRate;
     }
 
-    private Integer getPrice(Integer timeParked) {
-        // calculates the price given the amount of time the vehicle was parked
-        // assumes timeParked is in minutes
-        int days = timeParked / (24 * 60);
-        int hours = timeParked % (24 * 60);
-        if (hours * this.hourlyRate < this.dailyRate) {
-            return (days * this.dailyRate) + (hours * this.hourlyRate);
-        } else {
-            return ((days + 1) * this.dailyRate);
+    public void run() {
+        this.user = login();
+        if (this.user != null) {
+            homeMenu();
         }
     }
 
-    public void vehicleOps(String vid) {
-        if (this.user != null) {
-            if (Vehicle.isValidVehicleID(vid)) {
-                Vehicle currentVehicle = api.retrieveVehicleFromDB(vid);
+    // Handles user login and returns that employee
+    private Employee login() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Employee ID or 'E' to exit:");
+            String enteredEid = scanner.nextLine();
+            if ("E".equals(enteredEid)) {
+                keepRunning = false;
+                System.out.println("Exiting");
+                return null;
+            }
+            System.out.println("Enter password or 'E' to exit:");
+            String enteredPw = scanner.nextLine();
+            if ("E".equals(enteredPw)) {
+                keepRunning = false;
+                System.out.println("Exiting");
+                return null;
+            }
+            if (Employee.isValidEmployeeID(enteredEid) && Employee.isValidPassword(enteredPw)) {
+                if (this.api.employeeLogIn(enteredEid, enteredPw)) {
+                    System.out.println("Log in successful!");
+                    keepRunning = false;
+                    return this.api.retrieveEmployeeFromDB(enteredEid);
+                } else {
+                    System.out.println("Login unsuccessful - Employee ID or Password incorrect");
+                }
+            } else {
+                System.out.println("Invalid Employee ID or password");
+            }
+        }
+        return null;
+    }
 
-                System.out.println("Welcome to Vehicle Operations.  To exit any menu, enter E.");
+    // This is the first menu that opens after login
+    private void homeMenu() {
+        // basic menu offering vehicle operations and employee operations
+        boolean keepRunning = true;
+        Integer choice = -1;
+        while (keepRunning) {
+            System.out.println("1) Vehicle Operations\n2) Employee Operations\n3) Logout");
+            choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1:
+                    vehicleOpsMenu();
+                    break;
+                case 2:
+                    employeeOpsMenu();
+                    break;
+                case 3:
+                    this.user = null;
+                    keepRunning = false;
+                    System.out.println("Exiting menu.");
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+                    break;
+            }
+        }
+    }
 
-                boolean vo = true;
-                int failCount = 0;
-                while (vo) {
-                    System.out.println("Vehicle Operations:\n1) Update Vehicle Information\n2) Vehicle Exit\n3) Prepay\n4) View Vehicle and Vehicle Logs");
-                    String case1 = scanner.nextLine();
-                    switch (case1) {
-                        case "1":
-                            // Update Vehicle Information
-                            System.out.println("Update Vehicle Information");
-                            boolean uvi = true;
-                            int uviFailCount = 0;
-                            while (uvi) {
-                                System.out.println("Options:\n1) Location\n2) Make\n3) Color\n4) License Plate\n5) License Plate State\n6) Guest First Name\n7) Guest Last Name\n8) Room Number\n9) Save and Complete");
-                                String uviOption = scanner.nextLine();
-                                switch (uviOption) {
-                                    case "1":
-                                        // set location
-                                        System.out.println("Enter location:");
-                                        String l = scanner.nextLine();
-                                        boolean isRealSpot = false;
-                                        for (Spot spot : spotList) {
-                                            if (spot.getName() == l) {
-                                                isRealSpot = true;
-                                                garage.put(spot, currentVehicle);
-                                                currentVehicle.setLocation(l);
-                                                System.out.println("Location updated.");
-                                            }
-                                        }
-                                        if (!isRealSpot) {
-                                            System.out.println("Invalid input." + l + " is not a valid location.");
-                                        }
-                                        break;
-                                    case "2":
-                                        // set make
-                                        System.out.println("Enter make:");
-                                        String m = scanner.nextLine();
-                                        currentVehicle.setMake(m);
-                                        System.out.println("Make updated.");
-                                        break;
-                                    case "3":
-                                        // set color
-                                        System.out.println("Enter color:");
-                                        String c = scanner.nextLine();
-                                        currentVehicle.setColor(c);
-                                        System.out.println("Color updated.");
-                                        break;
-                                    case "4":
-                                        // set license plate
-                                        System.out.println("Enter license plate:");
-                                        String lp = scanner.nextLine();
-                                        if (lp.length() > 1 && lp.length() < 9) {
-                                            currentVehicle.setLicensePlate(lp);
-                                            System.out.println("License plate updated.");
-                                        } else {
-                                            System.out.println("Invalid input. " + lp + " is not a valid license plate.");
-                                        }
-                                        break;
-                                    case "5":
-                                        // set license plate state
-                                        System.out.println("Enter license plate state:");
-                                        String lpc = scanner.nextLine();
-                                        if (lpc.length() == 2 && Character.isLetter(lpc.charAt(0)) && Character.isLetter(lpc.charAt(1))) {
-                                            currentVehicle.setLicensePlateState(lpc);
-                                            System.out.println("License plate state updated.");
-                                        } else {
-                                            System.out.println("Invalid input. " + lpc + " is not a valid license plate state.");
-                                        }
-                                        break;
-                                    case "6":
-                                        // set guest first name
-                                        System.out.println("Enter guest's first name:");
-                                        String gfn = scanner.nextLine();
-                                        currentVehicle.setGuestFirstName(gfn);
-                                        System.out.println("Name updated.");
-                                        break;
-                                    case "7":
-                                        // set guest last name
-                                        System.out.println("Enter guest's last name:");
-                                        String gln = scanner.nextLine();
-                                        currentVehicle.setGuestLastName(gln);
-                                        System.out.println("Name updated.");
-                                        break;
-                                    case "8":
-                                        // set room number
-                                        System.out.println("Enter room number:");
-                                        String rm = scanner.nextLine();
-                                        try {
-                                            Integer rmInt = Integer.parseInt(rm);
-                                            currentVehicle.setRoomNumber(rmInt);
-                                            System.out.println("Room number updated.");
-                                        } catch (NumberFormatException e) {
-                                            System.out.println("Invalid input. " + rm + " is not a valid room number");
-                                        }
-                                        break;
-                                    case "9":
-                                        // save and complete
-                                        System.out.println("Saving...");
-                                        // assume that if vehicle was being parked, it is now parked
-                                        if (currentVehicle.getStatus() == "Being Parked") {
-                                            currentVehicle.setStatus("In");
-                                        }
-                                        // send updated vehicle to db
-                                        api.sendVehicleToDB(currentVehicle);
-                                        // create and send log
-                                        Log log = new Log(user.getEid(), vid, "Vehicle updated.");
-                                        api.sendLogToDB(log);
-                                        System.out.println("Saved.");
-                                        // close menu
-                                        uvi = false;
-                                        break;
-                                    case "E":
-                                        // exit
-                                        System.out.println("Exiting.");
-                                        uvi = false;
-                                        break;
-                                    default:
-                                        System.out.println("Invalid input: " + uviOption);
-                                        uviFailCount++;
-                                        if (uviFailCount > 9) {
-                                            uvi = false;
-                                            System.out.println("Too many invalid inputs.  Closing menu.");
-                                        }
-                                        break;
-                                }
-                            }
-                            break;
-                        case "2":
-                            // Vehicle Exit
-                            System.out.println("Vehicle Exiting:\n1) Close\n2) Will Return");
-                            int veFailCount = 0;
-                            boolean ve = true;
-                            while (ve) {
-                                String veOption = scanner.nextLine();
-                                switch (veOption) {
-                                    case "1":
-                                        // close
-                                        System.out.println("Pricing:\n1) Normal\n2) Custom\n3) Comp");
-                                        int vecFailCount = 0;
-                                        boolean vec = true;
-                                        while (vec) {
-                                            String vecOption = scanner.nextLine();
-                                            switch (vecOption) {
-                                                case "1":
-                                                    // normal price
-                                                    int price = getPrice(currentVehicle.getTotalNewTimeParked()) - currentVehicle.getPaidAmount();
-                                                    System.out.println("Price: " + price);
-                                                    boolean confirmedNormalPricePaid = yesNoConfirmation("Confirm transaction when complete (Y/N)");
-                                                    boolean confirmationRetry = !confirmedNormalPricePaid;
-                                                    int confirmationRetryFailCount = 0;
-                                                    while (confirmationRetry) {
-                                                        System.out.println("Transaction incomplete, enter E to exit, or Y to retry transaction confirmation.");
-                                                        String tiRes = scanner.nextLine();
-                                                        switch (tiRes) {
-                                                            case "E":
-                                                                confirmationRetry = true;
-                                                                break;
-                                                            case "Y":
-                                                                confirmedNormalPricePaid = yesNoConfirmation("Confirm transaction when complete (Y/N)");
-                                                                if (confirmedNormalPricePaid) {
-                                                                    confirmationRetry = true;
-                                                                }
-                                                                break;
-                                                            default:
-                                                                confirmationRetryFailCount++;
-                                                                if (confirmationRetryFailCount > 9) {
-                                                                    confirmationRetry = true;
-                                                                }                            
-                                                                break;                                    
-                                                        }
-                                                    }
-                                                    if (!confirmedNormalPricePaid) {
-                                                        vec = false;
-                                                        ve = false;
-                                                        break;
-                                                    }
-                                                    Log normalPricePaidLog = new Log(user.getEid(), vid, "Vehicle Charged Normal Price: " + price + " and closed");
-                                                    api.sendLogToDB(normalPricePaidLog);
-                                                    // create vehicle update json
-                                                    String closedPaidNormalPriceJson = "{\"id\": \"" + vid + "\", \"status\": \"Closed\", \"paidAmount\": \"" + (price + currentVehicle.getPaidAmount()) + "\"}";
-                                                    api.updateVehicleClosed(closedPaidNormalPriceJson);
-                                                    System.out.println("Transaction confirm.  Vehicle closed.");
-                                                    // check if vehicle is blocked
-                                                    for (Spot spot : spotList) {
-                                                        if (spot.getName() == currentVehicle.getLocation()) {
-                                                            for (Spot blocker : spot.getBlockedBy()) {
-                                                                System.out.println("Blocked by vehicle " + this.garage.get(blocker).getVid() + " in spot " + blocker.getName());
-                                                            }
-                                                            break;
-                                                        }
-                                                    }
-                                                    vec = false;
-                                                    ve = false;
-                                                    break;
-                                                case "2":
-                                                    // custom price
-                                                    System.out.println("Please provide password: ");
-                                                    String cpPw = scanner.nextLine();
-                                                    if (!api.employeeLogIn(this.user.getEid(), cpPw) && this.user.getSystemAccess() < 2) {
-                                                        System.out.println("Access denied.");
-                                                        vec = false;
-                                                        break;
-                                                    }
-                                                    System.out.println("Access granted.");
-                                                    System.out.println("Vehicle was here for " + (currentVehicle.getTotalNewTimeParked() / (24 * 60)) + " days, " + ((currentVehicle.getTotalNewTimeParked() % (24 * 60)) / 60) + " hours, and " + (currentVehicle.getTotalNewTimeParked() % 60) + " minutes.");
-                                                    System.out.println("Already paid: " + currentVehicle.getPaidAmount());
-                                                    System.out.println("Enter custom price: ");
-                                                    Integer customPrice = -1;
-                                                    int cpFailCount = 0;
-                                                    boolean cp = true;
-                                                    while (cp) {
-                                                        String customePriceRes = scanner.nextLine();
-                                                        try {
-                                                            customPrice = Integer.parseInt(customePriceRes);
-                                                        } catch (NumberFormatException e) {
-                                                            cpFailCount++;
-                                                            if (cpFailCount > 9) {
-                                                                break;
-                                                            }
-                                                        }
-                                                        if (customPrice != -1) {
-                                                            cp = !yesNoConfirmation("Confirm price: " + customPrice + "? (Y/N)");
-                                                        }
-                                                    }
-                                                    // if cp is still true, custom price was never set, exit this menu
-                                                    if (cp) {
-                                                        vec = false;
-                                                        break;
-                                                    }
-                                                    // otherwise the custom price was set and confirmed
-                                                    System.out.println("Custom price set: " + customPrice);
-                                                    if (yesNoConfirmation("Confirm transaction completed? (Y/N)")) {
-                                                        System.out.println("Transaction confirmed.");
-                                                        Log cpLog = new Log(this.user.getEid(), vid, "Vehicle Charged Custom Price: " + customPrice + " and Closed.");
-                                                        this.api.sendLogToDB(cpLog);
-                                                        String cpJson = "{\"vid\": \"" + vid + "\", \"status\": \"Closed\", \"paidAmount\": \"" + (customPrice + currentVehicle.getPaidAmount()) + "\"}";
-                                                        this.api.updateVehicleClosed(cpJson);
-                                                        vec = false;
-                                                        break;
-                                                    } else {
-                                                        System.out.println("Transaction cancelled.  Exiting.");
-                                                        vec = false;
-                                                        break;
-                                                    }
-                                                case "3":
-                                                    // comp
-                                                    System.out.println("Please provide password: ");
-                                                    String cpPw = scanner.nextLine();
-                                                    if (!api.employeeLogIn(this.user.getEid(), cpPw) && this.user.getSystemAccess() < 2) {
-                                                        System.out.println("Access denied.");
-                                                        vec = false;
-                                                        break;
-                                                    }
-                                                    System.out.println("Access granted.");
-                                                    System.out.println("Please give reason for comping: ");
-                                                    boolean compNotExplained = true;
-                                                    String compReason;
-                                                    while (compNotExplained) {
-                                                        compReason = scanner.nextLine();
-                                                        if (yesNoConfirmation("Confirm reason: " + compReason + " (Y/N)")) {
-                                                            compNotExplained = false;
-                                                        } else {
-                                                            System.out.println("Please give reason for comping: ");
-                                                        }
-                                                    }
-                                                    if (yesNoConfirmation("Comp and close ticket?  (Y/N)")) {
-                                                        Log compLog = new Log(this.user.getEid(), vid, "Vehicle Comped: " + compReason + ", Closed");
-                                                        this.api.sendLogToDB(compLog);
-                                                        String compJson = "{\"vid\": \"" + vid + "\", \"status\": \"Closed\"}";
-                                                        this.api.updateVehicleClosed(compJson);
-                                                        System.out.println("Comped and closed.");
-                                                    } else {
-                                                        System.out.println("Cancelled and exiting.");
-                                                        vec = false;
-                                                        break;
-                                                    }
-                                                case "E":
-                                                    // exit
-                                                    System.out.println("Exiting.");
-                                                    vec = false;
-                                                    break;
-                                                default:
-                                                    System.out.println("Invalid option " + vecOption);
-                                                    vecFailCount++;
-                                                    if (vecFailCount > 9) {
-                                                        vec = false;
-                                                        System.out.println("Too many invalid inputs.  Closing menu");
-                                                    }
-                                                    break;
-                                            }
-                                        }
-                                        break;
-                                    case "2":
-                                        // will return
-                                        // confirm that vehicle license plate and room number are saved
-                                        if (currentVehicle.getLicensePlate() != null && currentVehicle.getRoomNumber() != null) {
-                                            if (yesNoConfirmation("Confirm vehicle exiting (Y/N)")) {
-                                                Log log = new Log(this.user.getEid(), vid, "Vehicle Exit");
-                                                this.api.sendLogToDB(log);
-                                                String simpleExit = "{\"vid\": \"" + vid + "\", \"status\": \"Requested\"}";
-                                                this.api.updateVehicleStatus(simpleExit);
-                                                System.out.println("Vehicle requested.");
-                                            } else {
-                                                ve = false;
-                                                break;
-                                            }
-                                        } else {
-                                            if (currentVehicle.getLicensePlate() == null) {
-                                                System.out.println("Enter license plate:");
-                                                String lp = scanner.nextLine();
-                                                currentVehicle.setLicensePlate(lp);
-                                                if (currentVehicle.getLicensePlate() == null) {
-                                                    System.out.println("Invalid license plate, exiting.");
-                                                    ve = false;
-                                                    break;
-                                                }
-                                            }
-                                            if (currentVehicle.getRoomNumber() == null) {
-                                                System.out.println("Enter room number:");
-                                                String rmString = scanner.nextLine();
-                                                Integer rm = null;
-                                                try {
-                                                    rm = Integer.parseInt(rmString);
-                                                } catch (NumberFormatException e) {
-                                                    System.out.println("Room number invalid, exiting.");
-                                                    ve = false;
-                                                    break;
-                                                }
-                                                currentVehicle.setRoomNumber(rm);
-                                            }
-                                            Log updateLog = new Log(this.user.getEid(), vid, "Vehicle Update: License Plate and Room Number");
-                                            this.api.sendLogToDB(updateLog);
-                                            Log exitJson = new Log(this.user.getEid(), vid, "Vehicle Exiting");
-                                            this.api.sendLogToDB(updateLog);
-                                            String updateExit = "{\"vid\": \"" + vid + "\", \"status\": \"Requested\", \"licensePlate\": \"" + currentVehicle.getLicensePlate() + "\", \"roomNumber\": \"" + currentVehicle.getRoomNumber() + "\"}";
-                                            this.api.updateVehicleExiting(updateExit);
-                                            System.out.println("Changes saved, vehicle requested.");
-                                            ve = false;
-                                            break;                                            
-                                        } 
-                                        break;
-                                    case "E":
-                                        // exit
-                                        System.out.println("Exiting.");
-                                        ve = false;
-                                        break;
-                                    default:
-                                        System.out.println("Invalid option " + veOption);
-                                        veFailCount++;
-                                        if (veFailCount > 9) {
-                                            ve = false;
-                                            System.out.println("Too many invalid inputs.  Closing menu");
-                                        }
-                                        break;
-                                }
-                            }
-                            break;
-                        case "3":
-                            // Prepay
-                            break;
-                        case "4":
-                            // View Vehicle & Vehicle Logs
-                            break;
-                        case "E":
-                            // Exit
-                            vo = false;
-                            System.out.println("Closing function.");
-                            break;
-                        default:
-                            System.out.println("Invalid input: " + case1);
-                            failCount++;
-                            if (failCount > 9) {
-                                vo = false;
-                                System.out.println("Too many invalid inputs.  Closing function.");
-                            }
-                            break;
+    private void vehicleOpsMenu() {
+        // basic menu offering different vehicle oriented operations
+        boolean keepRunning = true;
+        Integer choice = -1;
+        while (keepRunning) {
+            System.out.println("1) Update Vehicle Information\n2) Vehicle Exit\n3) Prepay\n4) View Vehicle Logs\n5) Exit Menu");
+            choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1:
+                    updateVehicleInformationMenu();
+                    break;
+                case 2:
+                    vehicleExitMenu();
+                    break;
+                case 3:
+                    prepayMenu();
+                    break;
+                case 4:
+                    viewVehicleLogsMenu();
+                    break;
+                case 5:
+                    keepRunning = false;
+                    System.out.println("Exiting Menu.");
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+                    break;
+            }
+        }
+    }
+
+    private void updateVehicleInformationMenu() {
+        boolean keepRunning = true;
+        Integer choice = -1;
+        Vehicle v = null;
+        String vName = "NONE";
+        while (keepRunning) {
+            System.out.println("Current vehicle: " + vName);
+            System.out.println("1) Enter Vehicle ID of Current Vehicle\n2) Update Location\n3) Update Make\n4) Update Color\n5) Update License Plate\n6) Update License Plate Origin\n7) Update Guest First Name\n8) Update Guest Last Name\n9) Update Room Number\n10) Save Changes\n11) Exit Menu");
+            choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1:
+                    Vehicle probablyV = getVehicleFromVIDInput();
+                    if (probablyV != null) {
+                        v = probablyV;
+                        vName = v.getVid();
                     }
+                    break;
+                case 2:
+                    String probablyLocation = getVehicleLocationInput();
+                    if (probablyLocation != null) {
+                        v.setLocation(probablyLocation);
+                    }
+                    break;
+                case 3:
+                    String probablyMake = getVehicleMakeInput();
+                    if (probablyMake != null) {
+                        v.setMake(probablyMake);
+                    }
+                    break;
+                case 4:
+                    String probablyColor = getVehicleColorInput();
+                    if (probablyColor != null) {
+                        v.setColor(probablyColor);
+                    }
+                    break;
+                case 5:
+                    String probablyLP = getVehicleLPInput();
+                    if (probablyLP != null) {
+                        v.setLicensePlate(probablyLP);
+                    }
+                    break;
+                case 6:
+                    String probablyLPS = getVehicleLPSInput();
+                    if (probablyLPS != null) {
+                        v.setLicensePlateState(probablyLPS);
+                    }
+                    break;
+                case 7:
+                    String probablyGFN = getGFNInput();
+                    if (probablyGFN != null) {
+                        v.setGuestFirstName(probablyGFN);
+                    }
+                    break;
+                case 8:
+                    String probablyGLN = getGLNInput();
+                    if (probablyGLN != null) {
+                        v.setGuestLastName(probablyGLN);
+                    }
+                    break;
+                case 9:
+                    Integer probablyRM = getRMInput();
+                    if (probablyRM != null) {
+                        v.setRoomNumber(probablyRM);
+                    }
+                    break;
+                case 10:
+                    vehicleUpdateFinalize(v);
+                    break;
+                case 11:
+                    keepRunning = false;
+                    System.out.println("Exiting Menu.");
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+                    break;
+            }
+        }
+    }
+
+    // Takes in input and validates it as a VID, then returns the associated Vehicle using the api
+    private Vehicle getVehicleFromVIDInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Vehicle ID or input 'E' to exit:");
+            String enteredVid = scanner.nextLine();
+            if ("E".equals(enteredVid)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (Vehicle.isValidVehicleID(enteredVid)) {
+                // updating keepRunning isn't necessary here but it feels safer to have
+                keepRunning = false;
+                System.out.println("Retrieving vehicle data...");
+                return this.api.retrieveVehicleFromDB(enteredVid);
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private String getVehicleLocationInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Spot or input 'E' to exit:");
+            String enteredSpot = scanner.nextLine();
+            if ("E".equals(enteredSpot)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (this.garage.hasSpot(enteredSpot)) {
+                keepRunning = false;
+                return enteredSpot;
+            } else if (!this.garage.hasSpot(enteredSpot)) {
+                System.out.println("Invalid Spot.");
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private String getVehicleMakeInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Make or input 'E' to exit:");
+            String enteredMake = scanner.nextLine();
+            if ("E".equals(enteredMake)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            // TODO: implement a vehicle make list, use it to validate the make here
+            } else if (enteredMake.length() > 0) {
+                keepRunning = false;
+                return enteredMake;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private String getVehicleColorInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Color or input 'E' to exit:");
+            String enteredColor = scanner.nextLine();
+            if ("E".equals(enteredColor)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            // TODO: implement a vehicle color list, use it to validate the color here
+            } else if (enteredColor.length() > 0) {
+                keepRunning = false;
+                return enteredColor;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private String getVehicleLPInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter License Plate or input 'E' to exit:");
+            String enteredLP = scanner.nextLine();
+            if ("E".equals(enteredLP)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (enteredLP.length() > 1 && enteredLP.length() < 9) {
+                keepRunning = false;
+                return enteredLP;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private String getVehicleLPSInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter License Plate State (2 Alphabetical Characters) or input 'E' to exit:");
+            String enteredLPS = scanner.nextLine();
+            if ("E".equals(enteredLPS)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (enteredLPS.length() == 2 && Character.isLetter(enteredLPS.charAt(0)) && Character.isLetter(enteredLPS.charAt(1))) {
+                keepRunning = false;
+                return enteredLPS;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private String getGFNInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Guest First Name or input 'E' to exit:");
+            String enteredGFN = scanner.nextLine();
+            if ("E".equals(enteredGFN)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (enteredGFN.length() > 0) {
+                keepRunning = false;
+                return enteredGFN;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private String getGLNInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Guest Last Name or input 'E' to exit:");
+            String enteredGLN = scanner.nextLine();
+            if ("E".equals(enteredGLN)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (enteredGLN.length() > 0) {
+                keepRunning = false;
+                return enteredGLN;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private Integer getRMInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Room Number or input 'E' to exit:");
+            String enteredRM = scanner.nextLine();
+            if ("E".equals(enteredRM)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else {
+                try {
+                    Integer rm = Integer.parseInt(enteredRM);
+                    // TODO: implement a room list to validate room numbers, use it here
+                    keepRunning = false;
+                    return rm;
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input.");
+                }
+            }
+        }
+        return null;
+    }
+
+    private void vehicleUpdateFinalize(Vehicle v) {
+        System.out.println("Vehicle info unsaved:");
+        v.printInfo();
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Confirm and save? 'Y' to confirm, 'E' to exit:");
+            String res = scanner.nextLine();
+            if ("Y".equals(res)) {
+                System.out.println("Saving changes...");
+                this.api.sendVehicleToDB(v);
+                Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle information updated");
+                this.api.sendLogToDB(log);
+                this.garage.update(v);
+                System.out.println("Saved.");
+                keepRunning = false;
+            } else if ("E".equals(res)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+    }
+
+    private void vehicleExitMenu() {
+        boolean keepRunning = true;
+        Integer choice = -1;
+        while (keepRunning) {
+            System.out.println("1) Close\n2) Will Return\n3) Exit Menu");
+            choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1:
+                    closeVehicleMenu();
+                    break;
+                case 2:
+                    willReturnMenu();
+                    break;
+                case 3:
+                    keepRunning = false;
+                    System.out.println("Exiting Menu.");
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+                    break;
+            }
+        }
+    }
+
+    private void closeVehicleMenu() {
+        boolean keepRunning = true;
+        Integer choice = -1;
+        while (keepRunning) {
+            System.out.println("1) Normal Price\n2) Custom Price\n3) Comp\n4) Exit Menu");
+            choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1:
+                    closeWithNormalPrice();
+                    break;
+                case 2:
+                    closeWithCustomPrice();
+                    break;
+                case 3:
+                    closeWithComp();
+                    break;
+                case 4:
+                    keepRunning = false;
+                    System.out.println("Exiting Menu.");
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+                    break;
+            }
+        }
+    }
+
+    private void closeWithNormalPrice() {
+        Vehicle v = getVehicleFromVIDInput();
+        if (v == null) {
+            return;
+        }
+        Integer hoursNotPaid = getHoursNotPaidFor(v);
+        Integer price = ((hoursNotPaid % 24) * this.hourlyRate) + (((hoursNotPaid - (hoursNotPaid % 24)) / 24) * this.dailyRate);
+        System.out.println("Customer owes " + price + " for " + hoursNotPaid + " hours of unpaid parking.");
+        if (confirmCollectionOfMoney(price)) {
+            System.out.println("Transaction complete, closing vehicle.");
+            Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle Charged Normal Price and Closed - $" + price + " Collected");
+            this.api.sendLogToDB(log);
+            v.setStatus("Closed");
+            v.setPaidAmount(v.getPaidAmount() + price);
+            this.api.sendVehicleToDB(v);
+            for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+            }
+        } else {
+            System.out.println("Transaction incomplete, vehicle is still open.  Closing menu.");
+            return;
+        }
+    }
+
+    private void closeWithCustomPrice() {
+        if (this.user.getSystemAccess() <= 1) {
+            System.out.println("System access level not high enough, function restricted.  Exiting.");
+            return;
+        } 
+        Vehicle v = getVehicleFromVIDInput();
+        if (v == null) {
+            return;
+        }
+        Integer timeParked = v.getTotalTimeParked();
+        System.out.println("Vehicle parked for total of " + timeParked + " hours and already paid $" + v.getPaidAmount());
+        System.out.println("Input custom price, or 'E' to exit:");
+        boolean keepRunning = true;
+        Integer price = 0;
+        while (keepRunning) {
+            String priceString = scanner.nextLine();
+            if ("E".equals(priceString)) {
+                System.out.println("Exiting.");
+                return;
+            }
+            try {
+                price = Integer.parseInt(priceString);
+                keepRunning = false;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
+            }
+        }
+        if (confirmCollectionOfMoney(price)) {
+            System.out.println("Transaction complete, closing vehicle.");
+            Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle Charged Custom Price and Closed - $" + price + " Collected");
+            this.api.sendLogToDB(log);
+            v.setStatus("Closed");
+            v.setPaidAmount(v.getPaidAmount() + price);
+            this.api.sendVehicleToDB(v);
+            for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+            }
+        } else {
+            System.out.println("Transaction incomplete, vehicle still open.  Closing menu.");
+            return;
+        }
+    }
+
+    private void closeWithComp() {
+        if (this.user.getSystemAccess() <= 1) {
+            System.out.println("System access level not high enough, function restricted.  Exiting.");
+            return;
+        }
+        Vehicle v = getVehicleFromVIDInput();
+        if (v == null) {
+            return;
+        }
+        Integer timeParked = v.getTotalTimeParked();
+        System.out.println("Vehicle parked for total of " + timeParked + " hours and already paid $" + v.getPaidAmount());
+        System.out.println("Input reason for comp, or 'E' to exit:");
+        boolean keepRunning = true;
+        while (keepRunning) {
+            String reason = scanner.nextLine();
+            if (reason.length() > 0) {
+                System.out.println("Confirm reason for comp is correct: 'Y' to confirm, 'E' to exit:");
+                String confirm = scanner.nextLine();
+                if ("E".equals(confirm)) {
+                    System.out.println("Exiting.");
+                    return;
+                } else if ("Y".equals(confirm)) {
+                    System.out.println("Confirmed.  Closing vehicle.");
+                    keepRunning = false;
+                    Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle Comped and Closed: " + reason);
+                    this.api.sendLogToDB(log);
+                    v.setStatus("Closed");
+                    this.api.sendVehicleToDB(v);
+                    for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                        System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+                    }
+                } else {
+                    System.out.println("Invalid input.");
+                }
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+    }
+
+    private void willReturnMenu() {
+        Vehicle v = getVehicleFromVIDInput();
+        if (v == null) {
+            return;
+        }
+        if (v.getRoomNumber() != null && v.getLicensePlate() != null && v.getLicensePlateState() != null) {
+            System.out.println("Confirm vehicle exiting, 'Y' to confirm, 'E' to exit:");
+            boolean keepRunning = true;
+            while (keepRunning) {
+                String confirm = scanner.nextLine();
+                if ("E".equals(confirm)) {
+                    System.out.println("Exiting.");
+                    return;
+                } else if ("Y".equals(confirm)) {
+                    keepRunning = false;
+                    System.out.println("Confirmed.  Vehicle exiting.");
+                    Log log = new Log(this.user.getEid(), v.getVid(), "Vehicle Exiting.");
+                    this.api.sendLogToDB(log);
+                    v.setStatus("Requested");
+                    this.api.sendVehicleToDB(v);
+                    for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                        System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+                    }
+                } else {
+                    System.out.println("Invalid input.");
+                }
+            }
+        } else {
+            System.out.println("To continue, more more information is required.  To exit at any time, input 'E'.");
+            if (v.getLicensePlate() == null) {
+                System.out.println("License Plate required.  Please enter vehicle's license plate:");
+                boolean keepRunning = true;
+                while (keepRunning) {
+                    String lp = scanner.nextLine();
+                    if ("E".equals(lp)) {
+                        System.out.println("Exiting.");
+                        return;
+                    } else if (lp.length() > 1 && lp.length() < 9) {
+                        v.setLicensePlate(lp);
+                        keepRunning = false;
+                    } else {
+                        System.out.println("Invalid input.");
+                    }
+                }
+            }
+            if (v.getLicensePlateState() == null) {
+                System.out.println("License Plate Origin required.  Please enter vehicle's license plate origin:");
+                boolean keepRunning = true;
+                while (keepRunning) {
+                    String lps = scanner.nextLine();
+                    if ("E".equals(lps)) {
+                        System.out.println("Exiting.");
+                        return;
+                    } else if (lps.length() == 2 && Character.isLetter(lps.charAt(0)) && Character.isLetter(lps.charAt(1))) {
+                        v.setLicensePlateState(lps);
+                        keepRunning = false;
+                    } else {
+                        System.out.println("Invalid input.");
+                    }
+                }
+            }
+            if (v.getRoomNumber() == null) {
+                System.out.println("Room Number required.  Please enter customer's room number:");
+                boolean keepRunning = true;
+                while (keepRunning) {
+                    String rm = scanner.nextLine();
+                    if ("E".equals(rm)) {
+                        System.out.println("Exiting.");
+                        return;
+                    } else {
+                        try {
+                            Integer rmNum = Integer.parseInt(rm);
+                            keepRunning = false;
+                            v.setRoomNumber(rmNum);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input.");
+                        }
+                    }
+                }
+            }
+            Log viulog = new Log(this.user.getEid(), v.getVid(), "Vehicle information updated.");
+            this.api.sendLogToDB(viulog);
+            System.out.println("Confirm vehicle exiting, 'Y' to confirm, 'E' to exit:");
+            boolean keepRunning = true;
+            while (keepRunning) {
+                String confirm = scanner.nextLine();
+                if ("E".equals(confirm)) {
+                    System.out.println("Exiting.");
+                    return;
+                } else if ("Y".equals(confirm)) {
+                    keepRunning = false;
+                    System.out.println("Confirmed.  Vehicle exiting.");
+                    Log velog = new Log(this.user.getEid(), v.getVid(), "Vehicle Exiting.");
+                    this.api.sendLogToDB(velog);
+                    v.setStatus("Requested");
+                    this.api.sendVehicleToDB(v);
+                    for (Vehicle blocker : this.garage.vehicleExiting(v)) {
+                        System.out.println("Vehicle is blocked by " + blocker.getVid() + " in " + blocker.getLocation());
+                    }
+                } else {
+                    System.out.println("Invalid input.");
                 }
             }
         }
     }
 
-    private boolean yesNoConfirmation(String words) {
-        System.out.println(words);
-        boolean res = false;
-        boolean hasntAnswered = true;
-        int failCount = 0;
-        while (hasntAnswered) {
-            String inp = scanner.nextLine();
-            switch (inp) {
-                case "Y":
-                    res = true;
-                    hasntAnswered = false;
+    private void prepayMenu() {
+        Vehicle v = getVehicleFromVIDInput();
+        if (v == null) {
+            return;
+        }
+        System.out.println("Prepaying.  Enter amount to prepay, or 'E' to exit:");
+        boolean keepRunning = true;
+        Integer prepay = 0;
+        while (keepRunning) {
+            String prepayString = scanner.nextLine();
+            if ("E".equals(prepayString)) {
+                System.out.println("Exiting.");
+                return;
+            } else {
+                try {
+                    prepay = Integer.parseInt(prepayString);
+                    keepRunning = false;
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input.");
+                }
+            }
+        }
+        if (confirmCollectionOfMoney(prepay)) {
+            v.setPaidAmount(v.getPaidAmount() + prepay);
+            this.api.sendVehicleToDB(v);
+            Log log = new Log(this.user.getEid(), v.getVid(), "Prepaid: $" + prepay);
+            this.api.sendLogToDB(log);
+            System.out.println("Transaction complete.");
+        }
+    }
+
+    private void viewVehicleLogsMenu() {
+        Vehicle v = getVehicleFromVIDInput();
+        if (v == null) {
+            return;
+        }
+        ArrayList<Log> logs = this.api.retrieveVehicleLogs(v.getVid());
+        System.out.println("Vehicle logs:");
+        for (Log log : logs) {
+            log.print();
+        }
+        System.out.println("Input anything to return to Vehicle Operations Menu");
+        scanner.nextLine();
+        return;
+    }
+
+    private void employeeOpsMenu() {
+        if (this.user.getSystemAccess() > 2) {
+            boolean keepRunning = true;
+            Integer choice = -1;
+            while (keepRunning) {
+                System.out.println("1) Add New Employee\n2) Edit Existing Employee\n3) Exit Menu");
+                choice = Integer.parseInt(scanner.nextLine());
+                switch (choice) {
+                    case 1:
+                        addNewEmployee();
+                        break;
+                    case 2:
+                        editExistingEmployeeMenu();
+                        break;
+                    case 3:
+                        keepRunning = false;
+                        System.out.println("Exiting Menu.");
+                        break;
+                    default:
+                        System.out.println("Invalid input.");
+                        break;
+                }
+            }
+        } else {
+            System.out.println("System access level too low.  Operation restricted.  Exiting.");
+            return;
+        }
+    }
+
+    private void addNewEmployee() {
+        boolean keepRunning = true;
+        String newEid;
+        String name;
+        Integer garageAccess;
+        Integer systemAccess;
+        Employee newEmployee = null;
+        System.out.println("At any time, input 'E' to exit.");
+        System.out.println("Enter new Employee ID:");
+        while (keepRunning) {
+            newEid = scanner.nextLine();
+            if ("E".equals(newEid)) {
+                System.out.println("Exiting.");
+                return;
+            } else if (Employee.isValidEmployeeID(newEid)) {
+                newEmployee = new Employee(newEid);
+                keepRunning = false;
+            } else {
+                System.out.println("Invalid Emploee ID.");
+            }
+        }
+        keepRunning = true;
+        System.out.println("Enter new Employee's name:");
+        while (keepRunning) {
+            name = scanner.nextLine();
+            if ("E".equals(name)) {
+                System.out.println("Exiting.");
+                return;
+            } else if (name.length() > 0 && newEmployee != null) {
+                newEmployee.setName(name);
+                keepRunning = false;
+            } else {
+                System.out.println("Invalid input");
+            }
+        }
+        keepRunning = true;
+        System.out.println("Input Garage Access Level:\n0) No Access\n1) Basic Valet Access\n2) Master Access");
+        while (keepRunning) {
+            String ga = scanner.nextLine();
+            if ("E".equals(ga)) {
+                System.out.println("Exiting.");
+                return;
+            }
+            try {
+                garageAccess = Integer.parseInt(ga);
+                newEmployee.setGarageAccess(garageAccess);
+                keepRunning = false;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
+            }
+        }
+        keepRunning = true;
+        System.out.println("Input System Access Level:\n0) No Access\n1) Basic Valet Access\n2) Captain Access\n3) Master Access");
+        while (keepRunning) {
+            String sa = scanner.nextLine();
+            if ("E".equals(sa)) {
+                System.out.println("Exiting.");
+                return;
+            }
+            try {
+                systemAccess = Integer.parseInt(sa);
+                newEmployee.setSystemAccess(systemAccess);
+                keepRunning = false;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
+            }
+        }
+        keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Input temporary password:");
+            String enteredPw = scanner.nextLine();
+            if ("E".equals(enteredPw)) {
+                System.out.println("Exiting.");
+                return;
+            } else if (enteredPw.length() > 0) {
+                System.out.println("Confirm temporary password:");
+                String confirmPw = scanner.nextLine();
+                if ("E".equals(confirmPw)) {
+                    System.out.println("Exiting.");
+                    return;
+                } else if (confirmPw.equals(enteredPw)) {
+                    newEmployee.setPassword(confirmPw);
+                    System.out.println("Confirmed.  Password saved.");
+                    keepRunning = false;
+                } else {
+                    System.out.println("Password did not match.");
+                }
+            }
+        }
+        this.api.sendEmployeeToDb(newEmployee);
+        Log log = new Log(this.user.getEid(), "Created New Employee: " + newEmployee.getEid());
+        this.api.sendLogToDB(log);
+        System.out.println("New Employee Creation Complete.");
+    }
+
+    private void editExistingEmployeeMenu() {
+        boolean keepRunning = true;
+        Integer choice = -1;
+        Employee e = null;
+        String eName = "NONE";
+        while (keepRunning) {
+            System.out.println("Current employee: " + eName);
+            System.out.println("1) Enter Employee ID of Current Employee\n2) Update Name\n3) Update Gargae Access\n4) Update System Access\n5) Update Password\n6) Save Changes\n7) Exit Menu");
+            choice = Integer.parseInt(scanner.nextLine());
+            switch (choice) {
+                case 1:
+                    Employee probablyE = getEmployeeFromEIDInput();
+                    if (probablyE != null) {
+                        e = probablyE;
+                        eName = e.getEid();
+                    }
                     break;
-                case "N":
-                    hasntAnswered = false;
+                case 2:
+                    String probablyName = getEmployeeNameInput();
+                    if (probablyName != null) {
+                        e.setName(probablyName);
+                    }
                     break;
-                case "E":
-                    hasntAnswered = false;
+                case 3:
+                    Integer probablyGA = getGarageAccessInput();
+                    if (probablyGA != null) {
+                        e.setGarageAccess(probablyGA);
+                    }
+                    break;
+                case 4:
+                    Integer probablySA = getSystemAccessInput();
+                    if (probablySA != null) {
+                        e.setSystemAccess(probablySA);
+                    }
+                    break;
+                case 5:
+                    String probablyPw = getPasswordInput();
+                    if (probablyPw != null) {
+                        e.setPassword(probablyPw);
+                    }
+                    break;
+                case 6:
+                    employeeUpdateFinalize(e);
+                    break;
+                case 7:
+                    keepRunning = false;
+                    System.out.println("Exiting Menu.");
                     break;
                 default:
-                    failCount++;
-                    if (failCount > 9) {
-                        hasntAnswered = false;
-                    }
+                    System.out.println("Invalid input.");
                     break;
             }
         }
-        return res;
+    }
+
+    private Employee getEmployeeFromEIDInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter Employee ID or input 'E' to exit:");
+            String enteredEid = scanner.nextLine();
+            if ("E".equals(enteredEid)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (Employee.isValidEmployeeID(enteredEid)) {
+                // updating keepRunning isn't necessary here but it feels safer to have
+                keepRunning = false;
+                System.out.println("Retrieving employee data...");
+                return this.api.retrieveEmployeeFromDB(enteredEid);
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private String getEmployeeNameInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter updated employee name or input 'E' to exit:");
+            String enteredName = scanner.nextLine();
+            if ("E".equals(enteredName)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (enteredName.length() > 1) {
+                keepRunning = false;
+                return enteredName;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private Integer getGarageAccessInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Garage access level info:\n0 = no access\n1 = basic valet access\n2 = master access\nEnter this employee's garage access level (0, 1, or 2) or 'E' to exit:");
+            String enteredGA = scanner.nextLine();
+            if ("E".equals(enteredGA)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else {
+                try {
+                    Integer ga = Integer.parseInt(enteredGA);
+                    if (ga >= 0 && ga <= 2) {
+                        keepRunning = false;
+                        return ga;
+                    } else {
+                        System.out.println("Invalid input.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input.");
+                }
+            }
+        }
+        return null;
+    }
+
+    private Integer getSystemAccessInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("System access level info:\n0 = no access\n1 = basic valet access\n2 = captain access\n3 = master access\nEnter this employee's system access level (0, 1, 2, or 3) or 'E' to exit:");
+            String enteredSA = scanner.nextLine();
+            if ("E".equals(enteredSA)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else {
+                try {
+                    Integer sa = Integer.parseInt(enteredSA);
+                    if (sa >= 0 && sa <= 3) {
+                        keepRunning = false;
+                        return sa;
+                    } else {
+                        System.out.println("Invalid input.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input.");
+                }
+            }
+        }
+        return null;
+    }
+
+    private String getPasswordInput() {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Enter updated employee password or input 'E' to exit:");
+            String enteredPw = scanner.nextLine();
+            if ("E".equals(enteredPw)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return null;
+            } else if (Employee.isValidPassword(enteredPw)) {
+                keepRunning = false;
+                return enteredPw;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return null;
+    }
+
+    private void employeeUpdateFinalize(Employee e) {
+        System.out.println("Employee info unsaved:");
+        e.printInfo();
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Confirm and save? 'Y' to confirm, 'E' to exit:");
+            String res = scanner.nextLine();
+            if ("Y".equals(res)) {
+                System.out.println("Saving changes...");
+                this.api.sendEmployeeToDb(e);
+                Log log = new Log(this.user.getEid(), "Employee information updated");
+                this.api.sendLogToDB(log);
+                System.out.println("Saved.");
+                keepRunning = false;
+            } else if ("E".equals(res)) {
+                System.out.println("Exiting.");
+                keepRunning = false;
+                return;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+    }
+
+    private boolean confirmCollectionOfMoney(Integer money) {
+        boolean keepRunning = true;
+        while (keepRunning) {
+            System.out.println("Confirm $" + money + " Collected: (Y/N):");
+            String res = scanner.nextLine();
+            if ("Y".equals(res)) {
+                System.out.println("Confirmed.");
+                keepRunning = false;
+                return true;
+            } else if ("N".equals(res)) {
+                System.out.println("Cancelling operation.");
+                keepRunning = false;
+                return false;
+            } else {
+                System.out.println("Invalid input.");
+            }
+        }
+        return false;
+    }
+
+    private Integer getHoursNotPaidFor(Vehicle v) {
+        Integer moneyCollected = v.getPaidAmount();
+        Integer hoursPaid = 0;
+        while (moneyCollected > 0) {
+            if (moneyCollected > this.dailyRate) {
+                hoursPaid += 24;
+                moneyCollected = moneyCollected - this.dailyRate;
+            } else if (moneyCollected > this.hourlyRate) {
+                hoursPaid++;
+                moneyCollected = moneyCollected - this.hourlyRate;
+            } else if (moneyCollected > 0) {
+                hoursPaid += (moneyCollected / this.hourlyRate);
+                moneyCollected = 0;
+            }
+        }
+        return v.getTotalTimeParked() - hoursPaid;
     }
 }
