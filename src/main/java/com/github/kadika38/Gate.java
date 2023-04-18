@@ -103,10 +103,12 @@ public class Gate {
     }
 
     private void openEntryGateForOneVehicle() {
-
+        // fake function for the purposes of this project
+        System.out.println("Opening Entry Gate");
     }
 
     private void openExitGateForOneVehicle() {
-
+        // fake function for the purposes of this project
+        System.out.println("Opening Exit Gate");
     }
 }
