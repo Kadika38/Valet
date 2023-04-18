@@ -2,7 +2,7 @@ Trying to map out all necessary functions
 * function still needs to be added
 
 Notes / Todo
--   currently reworking the pos system IN POS2
+-   currently setting up routes so that testing can commence
 
 Notes for later
 - POS: implement a make list and us it to validate make input in getVehicleMakeInput()
