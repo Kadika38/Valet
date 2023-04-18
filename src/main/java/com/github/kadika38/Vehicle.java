@@ -123,6 +123,12 @@ public class Vehicle {
         return s;
     }
 
+    public void setLastTimeParkedNow() {
+        Date date = new java.util.Date();
+        this.lastTimeParked = "";
+        this.lastTimeParked += date;
+    }
+
     public Integer setTotalPreviousTimeParked(Integer num) {
         this.totalPreviousTimeParked = num;
         return num;
