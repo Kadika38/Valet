@@ -185,7 +185,7 @@ Constructor (String url)
                 - create new log(eid, vid, "Gate entry attempt, access not granted due to employee garage access level")
                 -> (call) (API Call Maker) Send Log to DB (log)
 
-- Scan in (Employee ID eid) *
+- Scan in (Employee ID eid)
     - if eid is valid Employee ID
         -> (call) (API Call Maker) Get Employee Garage Access
         - if employee garage access > 1
