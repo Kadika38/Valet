@@ -85,7 +85,21 @@ public class Gate {
     }
 
     public void scanOut(String eid) {
-
+        if (Employee.isValidEmployeeID(eid)) {
+            Employee e = this.api.retrieveEmployeeFromDB(eid);
+            if (e.getGarageAccess() > 1) {
+                System.out.println("Override exit granted.");
+                openExitGateForOneVehicle();
+                Log log = new Log(eid, "Gate exit - override access");
+                this.api.sendLogToDB(log);
+            } else {
+                System.out.println("No override access.  Exit denied.  See manager.");
+                Log log = new Log(eid, "Gate exit attempt, override exit not granted due to employee garage access level");
+                this.api.sendLogToDB(log);
+            }
+        } else {
+            System.out.println("Invalid Employee ID");
+        }
     }
 
     private void openEntryGateForOneVehicle() {
