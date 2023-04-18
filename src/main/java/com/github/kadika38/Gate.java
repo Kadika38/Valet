@@ -54,7 +54,34 @@ public class Gate {
     }
 
     public void scanOut(String vid, String eid) {
-
+        boolean vidIsValid = Vehicle.isValidVehicleID(vid);
+        boolean eidIsValid = Employee.isValidEmployeeID(eid);
+        if (vidIsValid && eidIsValid) {
+            Employee e = this.api.retrieveEmployeeFromDB(eid);
+            Vehicle v = this.api.retrieveVehicleFromDB(vid);
+            if (e.garageAccess > 0) {
+                if ("Requested".equals(v.getStatus())) {
+                    openExitGateForOneVehicle();
+                    v.setStatus("Retrieved");
+                    this.api.sendVehicleToDB(v);
+                    Log log = new Log(eid, vid, "Gate exit");
+                    this.api.sendLogToDB(log);
+                } else {
+                    System.out.println("Vehicle not requested, exit not granted.");
+                }
+            } else {
+                System.out.println("No Garage Access, exit not granted.  See Manager.");
+                Log log = new Log(eid, vid, "Gate exit attempt, exit not granted due to employee garage access level");
+                this.api.sendLogToDB(log);
+            }
+        } else {
+            if (!vidIsValid) {
+                System.out.println("Invalid Vehicle ID");
+            }
+            if (!eidIsValid) {
+                System.out.println("Invalid Employee ID");
+            }
+        }
     }
 
     public void scanOut(String eid) {
