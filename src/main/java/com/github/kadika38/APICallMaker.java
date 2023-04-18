@@ -84,26 +84,6 @@ public class APICallMaker {
         return sendJsonToDB(json, "/vehicle/update/new");
     }
 
-    public boolean updateVehicleStatus(String json) {
-        return sendJsonToDB(json, "/vehicle/update/status");
-    }
-
-    public boolean updateVehicleGarageEntry(String json) {
-        return sendJsonToDB(json, "/vehicle/update/ge");
-    }
-
-    public boolean updateVehicleClosed(String json) {
-        return sendJsonToDB(json, "/vehicle/update/closure");
-    }
-
-    public boolean updateVehicleExiting(String json) {
-        return sendJsonToDB(json, "/vehicle/update/exit");
-    }
-
-    public boolean updateVehiclePaidAmount(String json) {
-        return sendJsonToDB(json, "/vehicle/update/pa");
-    }
-
     public Vehicle retrieveVehicleFromDB(String vid) {
         if (Vehicle.isValidVehicleID(vid)) {
             String p = "/vehicle/find/" + vid;
@@ -116,27 +96,6 @@ public class APICallMaker {
 
         Vehicle failed = new Vehicle("");
         return failed;
-    }
-
-    public String getVehicleStatus(String vid) {
-        if (Vehicle.isValidVehicleID(vid)) {
-            String p = "/vehicle/find/" + vid;
-
-            String response = sendGetRequestToDB(p);
-            String status = "";
-
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode responseNode = mapper.readTree(response);
-                status = responseNode.get("status").asText();
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-
-            return status;
-        }
-
-        return null;
     }
 
     public boolean sendEmployeeToDb(Employee e) {
@@ -157,36 +116,6 @@ public class APICallMaker {
         Employee e = new Employee(response, true);
 
         return e;
-    }
-
-    public Integer getEmployeeGarageAccess(String eid) {
-        String response = sendGetRequestToDB("/employee/find/" + eid);
-        Integer access = 0;
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode responseNode = mapper.readTree(response);
-            access = responseNode.get("garageAccess").asInt();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return access;
-    }
-
-    public Integer getEmployeeSystemAccess(String eid) {
-        String response = sendGetRequestToDB("/employee/find/" + eid);
-        Integer access = 0;
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode responseNode = mapper.readTree(response);
-            access = responseNode.get("systemAccess").asInt();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return access;
     }
 
     public boolean employeeLogIn(String eid, String pw) {
